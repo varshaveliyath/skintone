@@ -49,3 +49,6 @@ venv.bak/
 
 # --- OS / Misc ---
 Thumbs.db
+# Python virtual environment
+venv/
+backend/venv/

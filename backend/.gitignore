@@ -1,0 +1,19 @@
+# Python cache & temp files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.swp
+*.swo
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Dlib model
+shape_predictor_68_face_landmarks.dat
