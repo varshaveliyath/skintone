@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: smile-backend
+    name: backend
     env: docker
     plan: free
     branch: main
