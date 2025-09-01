@@ -1,73 +1,60 @@
-'use client';
-
-
-import React, { useState } from 'react';
-import { Loader2, Mail, Linkedin } from 'lucide-react';
-
+import React, { useState } from "react";
+import { Loader2, Mail, Linkedin } from "lucide-react";
 
 export default function ImageAnalysisPage() {
-const [selectedImage, setSelectedImage] = useState(null);
-const [previewUrl, setPreviewUrl] = useState(null);
-const [result, setResult] = useState(null);
-const [loading, setLoading] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-
-const handleImageChange = (e) => {
-const file = e.target.files?.[0];
-if (file) {
-setSelectedImage(file);
-setPreviewUrl(URL.createObjectURL(file));
-setResult(null);
-}
-};
-
-
-const handleAnalyze = async () => {
-if (!selectedImage) return;
-setLoading(true);
-setResult(null);
-
-
-// simulate loading for 3 seconds
-setTimeout(async () => {
-  if (!selectedImage) return;
-
-  const formData = new FormData();
-  formData.append("image", selectedImage);
-
-  try {
-    // Use React environment variable
-    const API_URL = process.env.REACT_APP_API_URL; // e.g., "https://skintone.onrender.com"
-
-    // Send POST request to your FastAPI backend
-    const res = await fetch(`${API_URL}/api/analyze`, {
-      method: "POST",
-      body: formData,
-    });
-
-    // Check Content-Type before parsing
-    const contentType = res.headers.get("content-type");
-    if (!contentType || !contentType.includes("application/json")) {
-      const text = await res.text(); // fallback for debugging
-      throw new Error(
-        `Expected JSON, got:\n${text.slice(0, 200)}\n\n(Status: ${res.status})`
-      );
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      setPreviewUrl(URL.createObjectURL(file));
+      setResult(null);
     }
+  };
 
-    const data = await res.json();
+  const handleAnalyze = async () => {
+    if (!selectedImage) return;
+    setLoading(true);
+    setResult(null);
 
-    // Handle backend errors
-    if (!res.ok) throw new Error(data.error || "Failed to analyze");
+    setTimeout(async () => {
+      if (!selectedImage) return;
 
-    setResult(data);
-  } catch (err) {
-    console.error("❌ Fetch error:", err);
-    alert(err.message);
-  } finally {
-    setLoading(false);
-  }
-}, 3000);
+      const formData = new FormData();
+      formData.append("image", selectedImage);
 
+      try {
+        const API_URL = process.env.REACT_APP_API_URL; // e.g., https://skintone.onrender.com
+
+        const res = await fetch(`${API_URL}/api/analyze`, {
+          method: "POST",
+          body: formData,
+        });
+
+        const contentType = res.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          const text = await res.text();
+          throw new Error(
+            `Expected JSON, got:\n${text.slice(0, 200)}\n\n(Status: ${res.status})`
+          );
+        }
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to analyze");
+
+        setResult(data);
+      } catch (err) {
+        console.error("❌ Fetch error:", err);
+        alert(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }, 3000);
+  };
 
   // --- Professional descriptions for each skin subtype ---
   const subtypeDescriptions = {
@@ -303,4 +290,4 @@ setTimeout(async () => {
 
     </main>
   );
-}}
+}
