@@ -30,37 +30,40 @@ setResult(null);
 
 // simulate loading for 3 seconds
 setTimeout(async () => {
-const formData = new FormData();
-formData.append('image', selectedImage);
+  const formData = new FormData();
+  formData.append("image", selectedImage);
 
+  try {
+    // 👇 Use REACT_APP instead of NEXT_PUBLIC
+    const API_URL = process.env.REACT_APP_API_URL;
 
-try {
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+    // ✅ Ensure the backend endpoint matches your FastAPI/Flask route
+    const res = await fetch(`${API_URL}/analyze`, {
+      method: "POST",
+      body: formData,
+    });
 
-  const res = await fetch(`${API_URL}/api/analyze`, {
-    method: "POST",
-    body: formData,
-  });
+    // Check Content-Type before parsing
+    const contentType = res.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      const text = await res.text(); // fallback for debugging
+      throw new Error(
+        `Expected JSON, got:\n${text.slice(0, 200)}\n\n(Status: ${res.status})`
+      );
+    }
 
-  // Check Content-Type before parsing
-  const contentType = res.headers.get("content-type");
-  if (!contentType || !contentType.includes("application/json")) {
-    const text = await res.text(); // fallback for debugging
-    throw new Error(`Expected JSON, got: ${text.slice(0, 100)}`);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed to analyze");
+
+    setResult(data);
+  } catch (err) {
+    console.error("❌ Fetch error:", err);
+    alert(err.message);
+  } finally {
+    setLoading(false);
   }
-
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || "Failed to analyze");
-
-  setResult(data);
-} catch (err) {
-  alert(err.message);
-} finally {
-  setLoading(false);
-}
-
 }, 3000);
-};
+
 
   // --- Professional descriptions for each skin subtype ---
   const subtypeDescriptions = {
@@ -296,5 +299,4 @@ try {
 
     </main>
   );
-}
- 
+}}

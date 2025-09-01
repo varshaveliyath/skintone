@@ -19,8 +19,7 @@ backend/.Python
 backend/venv/
 
 venv/
-ENV/
-env/
+
 venv.bak/
 *.sqlite3
 
