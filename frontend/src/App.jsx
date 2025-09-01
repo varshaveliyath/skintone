@@ -30,15 +30,17 @@ setResult(null);
 
 // simulate loading for 3 seconds
 setTimeout(async () => {
+  if (!selectedImage) return;
+
   const formData = new FormData();
   formData.append("image", selectedImage);
 
   try {
-    // 👇 Use REACT_APP instead of NEXT_PUBLIC
-    const API_URL = process.env.REACT_APP_API_URL;
+    // Use React environment variable
+    const API_URL = process.env.REACT_APP_API_URL; // e.g., "https://skintone.onrender.com"
 
-    // ✅ Ensure the backend endpoint matches your FastAPI/Flask route
-    const res = await fetch(`${API_URL}/analyze`, {
+    // Send POST request to your FastAPI backend
+    const res = await fetch(`${API_URL}/api/analyze`, {
       method: "POST",
       body: formData,
     });
@@ -53,6 +55,8 @@ setTimeout(async () => {
     }
 
     const data = await res.json();
+
+    // Handle backend errors
     if (!res.ok) throw new Error(data.error || "Failed to analyze");
 
     setResult(data);
