@@ -1,11 +1,11 @@
 services:
   - type: web
-    name: backend
+    name: skintone-backend
     env: docker
     plan: free
+    region: oregon
     branch: main
-    rootDir: backend
-    dockerfilePath: backend/Dockerfile
-    envVars:
-      - key: PORT
-        value: 10000
+    autoDeploy: true
+    dockerContext: ./backend
+    dockerfilePath: ./backend/Dockerfile
+    healthCheckPath: /

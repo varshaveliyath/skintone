@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     build-essential cmake \
     libopenblas-dev liblapack-dev \
     libx11-dev libgtk2.0-dev \
+    libgl1-mesa-dev libglib2.0-0 \
     python3-dev wget unzip \
     && rm -rf /var/lib/apt/lists/*
 
@@ -25,5 +26,5 @@ COPY . .
 # Expose port (Render expects 10000 or $PORT)
 EXPOSE 10000
 
-# Start the Flask app
-CMD ["gunicorn", "-b", "0.0.0.0:10000", "app:app"]
+# Start the FastAPI app with Gunicorn + Uvicorn workers
+CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:10000", "app:app"]
