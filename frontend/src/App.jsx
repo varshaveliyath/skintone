@@ -35,10 +35,13 @@ formData.append('image', selectedImage);
 
 
 try {
-const res = await fetch('http://127.0.0.1:8000/api/analyze', {
-method: 'POST',
-body: formData,
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const res = await fetch(`${API_URL}/api/analyze`, {
+  method: "POST",
+  body: formData,
 });
+
+
 
 
 const data = await res.json();
