@@ -35,26 +35,30 @@ formData.append('image', selectedImage);
 
 
 try {
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-const res = await fetch(`${API_URL}/api/analyze`, {
-  method: "POST",
-  body: formData,
-});
+  const res = await fetch(`${API_URL}/api/analyze`, {
+    method: "POST",
+    body: formData,
+  });
 
+  // Check Content-Type before parsing
+  const contentType = res.headers.get("content-type");
+  if (!contentType || !contentType.includes("application/json")) {
+    const text = await res.text(); // fallback for debugging
+    throw new Error(`Expected JSON, got: ${text.slice(0, 100)}`);
+  }
 
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Failed to analyze");
 
-
-const data = await res.json();
-if (!res.ok) throw new Error(data.error || 'Failed to analyze');
-
-
-setResult(data);
+  setResult(data);
 } catch (err) {
-alert(err.message);
+  alert(err.message);
 } finally {
-setLoading(false);
+  setLoading(false);
 }
+
 }, 3000);
 };
 
