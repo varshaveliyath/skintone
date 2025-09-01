@@ -23,8 +23,8 @@ RUN pip install -r requirements.txt
 # Copy your app code
 COPY . .
 
-# Expose port (Render expects 10000 or $PORT)
+# Expose port
 EXPOSE 10000
 
-# Start the FastAPI app with Gunicorn + Uvicorn workers
+# Start FastAPI app
 CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:10000", "app:app"]
