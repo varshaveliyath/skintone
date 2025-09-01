@@ -37,10 +37,28 @@ formData.append('image', selectedImage);
 try {
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-const res = await fetch(`${API_URL}/api/analyze`, {
-  method: "POST",
-  body: formData,
-});
+async function analyzeImage(file) {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  try {
+    const res = await fetch(`${API_URL}/api/analyze`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json(); // backend always returns JSON
+    console.log("Analysis Result:", data);
+
+    if (data.error) {
+      alert("Error: " + data.error);
+    } else {
+      // process result here
+    }
+  } catch (err) {
+    console.error("Request failed:", err);
+  }
+}
 
 
 

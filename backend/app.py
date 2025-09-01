@@ -14,7 +14,7 @@ app = FastAPI()
 # Allow frontend calls
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],   # In production, replace with your frontend domain
+    allow_origins=["https://skintone-lime.vercel.app/"],   # In production, replace with your frontend domain
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
