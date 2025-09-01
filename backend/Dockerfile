@@ -1,27 +1,29 @@
+# Use official Python image
 FROM python:3.10-slim
 
-# System dependencies for dlib
-RUN apt-get update && apt-get install -y \
-    cmake \
-    g++ \
-    make \
-    libopenblas-dev \
-    liblapack-dev \
-    libx11-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Set workdir
+# Set working directory
 WORKDIR /app
 
-# Install Python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Install system dependencies for dlib & OpenCV
+RUN apt-get update && apt-get install -y \
+    build-essential cmake \
+    libopenblas-dev liblapack-dev \
+    libx11-dev libgtk2.0-dev \
+    python3-dev wget unzip \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy app code
+# Copy requirements first for caching
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+
+# Copy your app code
 COPY . .
 
-# Expose port
+# Expose port (Render expects 10000 or $PORT)
 EXPOSE 10000
 
-# Run FastAPI
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "10000"]
+# Start the Flask app
+CMD ["gunicorn", "-b", "0.0.0.0:10000", "app:app"]
