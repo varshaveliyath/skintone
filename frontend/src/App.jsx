@@ -36,6 +36,7 @@ formData.append('image', selectedImage);
 
 try {
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 const res = await fetch(`${API_URL}/api/analyze`, {
   method: "POST",
   body: formData,
