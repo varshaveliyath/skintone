@@ -333,7 +333,7 @@ def process_image(image_np):
 
 # -------- API Routes --------
 
-@app.get("/")
+@app.get("/analyze")
 def health():
     return {"message": "API running"}
 
