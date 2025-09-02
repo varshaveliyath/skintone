@@ -30,7 +30,7 @@ export default function ImageAnalysisPage() {
       try {
         const API_URL = process.env.REACT_APP_API_URL; // e.g., https://skintone.onrender.com
 
-        const res = await fetch(`${API_URL}/api/analyze`, {
+        const res = await fetch(`${API_URL}/analyze`, {
           method: "POST",
           body: formData,
         });

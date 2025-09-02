@@ -332,11 +332,12 @@ def process_image(image_np):
     }, None
 
 # -------- API Routes --------
+
 @app.get("/")
 def health():
     return {"message": "API running"}
 
-@app.post("/api/analyze")
+@app.post("/analyze")
 async def analyze(image: UploadFile = File(...)):
     try:
         contents = await image.read()
@@ -346,6 +347,7 @@ async def analyze(image: UploadFile = File(...)):
         result, error = process_image(img)
         if error:
             return JSONResponse(status_code=400, content={"error": error})
-        return result
+
+        return result  # FastAPI auto converts dict to JSON
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
