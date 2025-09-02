@@ -130,7 +130,7 @@ def process_image(image_np):
 
     # Skin subtype
     skin_subtype = f"{skin_tone.capitalize()} {undertone.capitalize()}"
-
+  
     # Recommended and avoid colors with reasons
     recommendations = {
         "Light Warm": [
@@ -312,7 +312,6 @@ def process_image(image_np):
 
     recommended_colors = recommendations.get(skin_subtype, [{"name":"Default White","hex":"#FFFFFF","reason":"Default"}])
     avoid_colors = avoid_colors_map.get(skin_subtype, [{"name":"Default Black","hex":"#000000","reason":"Default"}])
-
     _, buffer = cv2.imencode('.jpg', image_np)
     encoded_image = base64.b64encode(buffer).decode('utf-8')
 
@@ -321,8 +320,8 @@ def process_image(image_np):
         "skin_tone": skin_tone,
         "skin_subtype": skin_subtype,
         "undertone": undertone,
-        "recommended_colors": recommended_colors,
-        "avoid_colors": avoid_colors,
+        "recommended_colors": recommendations.get(skin_subtype, [{"name":"Default White","hex":"#FFFFFF","reason":"Default"}]),
+        "avoid_colors": avoid_colors_map.get(skin_subtype, [{"name":"Default Black","hex":"#000000","reason":"Default"}]),
         "avg_light_rgb": avg_light,
         "avg_light_hex": hex_light,
         "avg_dark_rgb": avg_dark,
@@ -337,17 +336,34 @@ def process_image(image_np):
 def health():
     return {"message": "API running"}
 
-@app.post("/api/analyze")
+@app.post("/analyze")
 async def analyze(image: UploadFile = File(...)):
     try:
         contents = await image.read()
         npimg = np.frombuffer(contents, np.uint8)
-        img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
+        img = cv2.imdecode(npimg, cv2.IMREAD_UNCHANGED)  # Preserve channels
+
+        if img is None:
+            return JSONResponse(
+                status_code=400,
+                content={"error": "Unsupported image type. Must be JPEG/PNG, 8-bit gray or RGB/RGBA."}
+            )
+
+        # Convert RGBA to RGB if needed
+        if len(img.shape) == 3 and img.shape[2] == 4:
+            img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
+
+        # Convert grayscale to RGB if needed
+        if len(img.shape) == 2:
+            img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 
         result, error = process_image(img)
+
         if error:
             return JSONResponse(status_code=400, content={"error": error})
 
-        return result  # FastAPI auto converts dict to JSON
+        return result
+
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
+    
