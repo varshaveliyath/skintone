@@ -333,11 +333,11 @@ def process_image(image_np):
 
 # -------- API Routes --------
 
-@app.get("/analyze")
+@app.get("/")
 def health():
     return {"message": "API running"}
 
-@app.post("/analyze")
+@app.post("/api/analyze")
 async def analyze(image: UploadFile = File(...)):
     try:
         contents = await image.read()
