@@ -15,47 +15,50 @@ export default function ImageAnalysisPage() {
       setResult(null);
     }
   };
+const handleAnalyze = async () => {
+  if (!selectedImage) return;
+  setLoading(true);
+  setResult(null);
 
-  const handleAnalyze = async () => {
+  setTimeout(async () => {
     if (!selectedImage) return;
-    setLoading(true);
-    setResult(null);
 
-    setTimeout(async () => {
-      if (!selectedImage) return;
+    const formData = new FormData();
+    formData.append("image", selectedImage);
 
-      const formData = new FormData();
-      formData.append("image", selectedImage);
+    try {
+      // ✅ FIX: Use Vite environment variable
+      const API_URL = import.meta.env.VITE_API_URL;
 
-      try {
-        const API_URL = process.env.REACT_APP_API_URL; // e.g., https://skintone-lime.vercel.app
-
-        // ✅ Updated API endpoint to match FastAPI route
-        const res = await fetch(`${API_URL}/analyze`, {
-          method: "POST",
-          body: formData,
-        });
-
-        const contentType = res.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          const text = await res.text();
-          throw new Error(
-            `Expected JSON, got:\n${text.slice(0, 200)}\n\n(Status: ${res.status})`
-          );
-        }
-
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Failed to analyze");
-
-        setResult(data);
-      } catch (err) {
-        console.error("❌ Fetch error:", err);
-        alert(err.message);
-      } finally {
-        setLoading(false);
+      if (!API_URL) {
+        throw new Error("Backend API URL is not defined");
       }
-    }, 3000);
-  };
+
+      const res = await fetch(`${API_URL}/analyze`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const contentType = res.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        const text = await res.text();
+        throw new Error(
+          `Expected JSON, got:\n${text.slice(0, 200)}\n\n(Status: ${res.status})`
+        );
+      }
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to analyze");
+
+      setResult(data);
+    } catch (err) {
+      console.error("❌ Fetch error:", err);
+      alert(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, 3000);
+};
 
   // --- Professional descriptions for each skin subtype ---
   const subtypeDescriptions = {
