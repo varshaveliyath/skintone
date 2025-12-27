@@ -17,48 +17,45 @@ export default function ImageAnalysisPage() {
   };
 const handleAnalyze = async () => {
   if (!selectedImage) return;
+
   setLoading(true);
   setResult(null);
 
-  setTimeout(async () => {
-    if (!selectedImage) return;
+  const formData = new FormData();
+  formData.append("image", selectedImage);
 
-    const formData = new FormData();
-    formData.append("image", selectedImage);
+  try {
+    const API_URL = import.meta.env.VITE_API_URL;
 
-    try {
-      // ✅ FIX: Use Vite environment variable
-      const API_URL = import.meta.env.VITE_API_URL;
-
-      if (!API_URL) {
-        throw new Error("Backend API URL is not defined");
-      }
-
-      const res = await fetch(`${API_URL}/analyze`, {
-        method: "POST",
-        body: formData,
-      });
-
-      const contentType = res.headers.get("content-type");
-      if (!contentType || !contentType.includes("application/json")) {
-        const text = await res.text();
-        throw new Error(
-          `Expected JSON, got:\n${text.slice(0, 200)}\n\n(Status: ${res.status})`
-        );
-      }
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to analyze");
-
-      setResult(data);
-    } catch (err) {
-      console.error("❌ Fetch error:", err);
-      alert(err.message);
-    } finally {
-      setLoading(false);
+    if (!API_URL) {
+      throw new Error("VITE_API_URL is not defined");
     }
-  }, 3000);
+
+    const res = await fetch(`${API_URL}/analyze`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const contentType = res.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      const text = await res.text();
+      throw new Error(
+        `Expected JSON, got:\n${text.slice(0, 200)}\n(Status: ${res.status})`
+      );
+    }
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed to analyze");
+
+    setResult(data);
+  } catch (err) {
+    console.error("❌ Fetch error:", err);
+    alert(err.message);
+  } finally {
+    setLoading(false);
+  }
 };
+
 
   // --- Professional descriptions for each skin subtype ---
   const subtypeDescriptions = {
