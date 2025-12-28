@@ -8,13 +8,15 @@ import os
 import base64
 import urllib.request
 import bz2
+import io
+from PIL import Image
 
 app = FastAPI()
 
 # Allow frontend calls
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://skintone-lime.vercel.app",],   # In production, replace with your frontend domain
+    allow_origins=["https://skintone-lime.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -53,9 +55,12 @@ def average_color(swatches):
 
 def process_image(image_np):
     original_image = image_np.copy()
-    gray = cv2.cvtColor(image_np, cv2.COLOR_BGR2GRAY)
-    faces = detector(gray)
 
+    # OpenCV expects BGR, but image_np is RGB → convert safely
+    bgr_image = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
+    gray = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2GRAY)
+
+    faces = detector(gray)
     if len(faces) == 0:
         return None, "No face detected"
 
@@ -63,13 +68,13 @@ def process_image(image_np):
     landmarks = [(pt.x, pt.y) for pt in shape.parts()]
     custom_points = []
 
-    # Custom sampling points
     connection_pairs = [
         (6, 9), (28, 15), (2, 30), (35, 13), (31, 4),
         (4, 61), (5, 60), (6, 59), (7, 58), (8, 57),
         (9, 56), (10, 55), (11, 54), (12, 53),
         (1, 28), (2, 30), (27, 35), (27, 31), (29, 15), (30, 14)
     ]
+
     for start_idx, end_idx in connection_pairs:
         x1, y1 = landmarks[start_idx]
         x2, y2 = landmarks[end_idx]
@@ -79,23 +84,15 @@ def process_image(image_np):
             yi = int(y1 + alpha * (y2 - y1))
             custom_points.append((xi, yi))
 
-    # Extra brow & forehead points
     brow_indices = [20, 21, 22, 23]
     for idx in brow_indices:
         x, y = landmarks[idx]
         custom_points.append((x, y - 20))
 
-    forehead_offsets = [(0, -10), (-10, 0), (0, -10), (-10, 0),
-                        (0, -10), (10, 0), (0, -10), (10, 0)]
-    for i, (dx, dy) in enumerate(forehead_offsets):
-        base_x, base_y = custom_points[-4 + i // 2]
-        custom_points.append((base_x + dx, base_y + dy))
-
-    # Collect swatches
     light_swatches, dark_swatches = [], []
     for (x, y) in custom_points:
         if 0 <= x < original_image.shape[1] and 0 <= y < original_image.shape[0]:
-            b, g, r = original_image[y, x]
+            r, g, b = original_image[y, x]
             brightness = get_rgb_brightness(r, g, b)
             if brightness > 130:
                 light_swatches.append((r, g, b))
@@ -106,7 +103,6 @@ def process_image(image_np):
     avg_dark, hex_dark = average_color(dark_swatches)
     avg_total, hex_total = average_color(light_swatches + dark_swatches)
 
-    # Determine main skin tone
     light_count = len(light_swatches)
     dark_count = len(dark_swatches)
     total = light_count + dark_count
@@ -119,7 +115,6 @@ def process_image(image_np):
     else:
         skin_tone = "dark"
 
-    # --- Determine undertone ---
     r, g, b = avg_total if avg_total else (128, 128, 128)
     if r > b and r > g:
         undertone = "warm"
@@ -128,9 +123,8 @@ def process_image(image_np):
     else:
         undertone = "neutral"
 
-    # Skin subtype
     skin_subtype = f"{skin_tone.capitalize()} {undertone.capitalize()}"
-  
+
     # Recommended and avoid colors with reasons
     recommendations = {
         "Light Warm": [
@@ -310,18 +304,16 @@ def process_image(image_np):
 
     }
 
-    recommended_colors = recommendations.get(skin_subtype, [{"name":"Default White","hex":"#FFFFFF","reason":"Default"}])
-    avoid_colors = avoid_colors_map.get(skin_subtype, [{"name":"Default Black","hex":"#000000","reason":"Default"}])
-    _, buffer = cv2.imencode('.jpg', image_np)
-    encoded_image = base64.b64encode(buffer).decode('utf-8')
+    _, buffer = cv2.imencode(".jpg", cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR))
+    encoded_image = base64.b64encode(buffer).decode("utf-8")
 
     return {
         "annotated_image": encoded_image,
         "skin_tone": skin_tone,
         "skin_subtype": skin_subtype,
         "undertone": undertone,
-        "recommended_colors": recommendations.get(skin_subtype, [{"name":"Default White","hex":"#FFFFFF","reason":"Default"}]),
-        "avoid_colors": avoid_colors_map.get(skin_subtype, [{"name":"Default Black","hex":"#000000","reason":"Default"}]),
+        "recommended_colors": [],
+        "avoid_colors": [],
         "avg_light_rgb": avg_light,
         "avg_light_hex": hex_light,
         "avg_dark_rgb": avg_dark,
@@ -340,22 +332,10 @@ def health():
 async def analyze(image: UploadFile = File(...)):
     try:
         contents = await image.read()
-        npimg = np.frombuffer(contents, np.uint8)
-        img = cv2.imdecode(npimg, cv2.IMREAD_UNCHANGED)  # Preserve channels
 
-        if img is None:
-            return JSONResponse(
-                status_code=400,
-                content={"error": "Unsupported image type. Must be JPEG/PNG, 8-bit gray or RGB/RGBA."}
-            )
-
-        # Convert RGBA to RGB if needed
-        if len(img.shape) == 3 and img.shape[2] == 4:
-            img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
-
-        # Convert grayscale to RGB if needed
-        if len(img.shape) == 2:
-            img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+        # 🔥 CRITICAL FIX: PIL ensures 8-bit RGB always
+        pil_image = Image.open(io.BytesIO(contents)).convert("RGB")
+        img = np.array(pil_image).astype(np.uint8)
 
         result, error = process_image(img)
 
@@ -366,4 +346,3 @@ async def analyze(image: UploadFile = File(...)):
 
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
-    
