@@ -9,7 +9,7 @@ import base64
 import urllib.request
 import bz2
 import io
-from PIL import Image
+from PIL import Image, ImageOps
 
 app = FastAPI()
 
@@ -56,7 +56,7 @@ def average_color(swatches):
 def process_image(image_np):
     original_image = image_np.copy()
 
-    # OpenCV expects BGR, but image_np is RGB → convert safely
+    # OpenCV expects BGR
     bgr_image = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
     gray = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2GRAY)
 
@@ -125,7 +125,6 @@ def process_image(image_np):
 
     skin_subtype = f"{skin_tone.capitalize()} {undertone.capitalize()}"
 
-    # Recommended and avoid colors with reasons
     recommendations = {
         "Light Warm": [
             {"name": "Peach", "hex": "#FFDAB9", "reason": "Enhances warm glow"},
@@ -303,7 +302,7 @@ def process_image(image_np):
     ]
 
     }
-
+    
     _, buffer = cv2.imencode(".jpg", cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR))
     encoded_image = base64.b64encode(buffer).decode("utf-8")
 
@@ -333,9 +332,19 @@ async def analyze(image: UploadFile = File(...)):
     try:
         contents = await image.read()
 
-        # 🔥 CRITICAL FIX: PIL ensures 8-bit RGB always
-        pil_image = Image.open(io.BytesIO(contents)).convert("RGB")
-        img = np.array(pil_image).astype(np.uint8)
+        # ✅ FIX: enforce dlib-safe image format
+        pil_image = Image.open(io.BytesIO(contents))
+        pil_image = ImageOps.exif_transpose(pil_image)
+        pil_image = pil_image.convert("RGB")
+
+        img = np.asarray(pil_image, dtype=np.uint8)
+
+        # Safety check
+        if img.ndim != 3 or img.shape[2] != 3:
+            return JSONResponse(
+                status_code=400,
+                content={"error": "Invalid image format after conversion"}
+            )
 
         result, error = process_image(img)
 
