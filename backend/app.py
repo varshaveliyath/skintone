@@ -320,20 +320,26 @@ def analyze_face_image(rgb_image: np.ndarray):
 @app.get("/")
 def health():
     return {"message": "API running"}
-
 @app.post("/analyze")
 async def analyze_image(image: UploadFile = File(...)):
     try:
         image_bytes = await image.read()
 
-        # STRICT image normalization (fixes your error)
-        pil_image = Image.open(io.BytesIO(image_bytes))
-        pil_image = ImageOps.exif_transpose(pil_image)
-        pil_image = pil_image.convert("RGB")
+        # Decode image using OpenCV (MOST IMPORTANT FIX)
+        np_arr = np.frombuffer(image_bytes, np.uint8)
+        bgr_image = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
-        rgb_array = np.array(pil_image, dtype=np.uint8)
+        if bgr_image is None:
+            return JSONResponse(
+                status_code=400,
+                content={"error": "Invalid or unsupported image file"}
+            )
 
-        result, error = analyze_face_image(rgb_array)
+        # Convert BGR → RGB
+        rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
+
+        result, error = analyze_face_image(rgb_image)
+
         if error:
             return JSONResponse(status_code=400, content={"error": error})
 
