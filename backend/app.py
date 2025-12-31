@@ -1,131 +1,126 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+
 import cv2
 import dlib
 import numpy as np
 import os
-import base64
+import io
 import urllib.request
 import bz2
-import io
+
 from PIL import Image, ImageOps
+
+# =========================
+# App setup
+# =========================
 
 app = FastAPI()
 
-# Allow frontend calls
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://skintone-lime.vercel.app"],
+    allow_origins=[
+        "https://skintone-lime.vercel.app",
+        "http://localhost:5173"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# -------- Download Dlib model if not present --------
-MODEL_URL = "http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2"
-MODEL_BZ2 = "shape_predictor_68_face_landmarks.dat.bz2"
-MODEL_PATH = "shape_predictor_68_face_landmarks.dat"
+# =========================
+# Dlib model setup
+# =========================
 
-def download_shape_predictor():
-    print("Downloading dlib shape predictor model...")
-    urllib.request.urlretrieve(MODEL_URL, MODEL_BZ2)
-    with bz2.BZ2File(MODEL_BZ2) as fr, open(MODEL_PATH, "wb") as fw:
-        fw.write(fr.read())
-    os.remove(MODEL_BZ2)
-    print("Download complete.")
+DLIB_MODEL_URL = "http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2"
+DLIB_MODEL_PATH = "shape_predictor_68_face_landmarks.dat"
 
-if not os.path.exists(MODEL_PATH):
-    download_shape_predictor()
+if not os.path.exists(DLIB_MODEL_PATH):
+    bz2_path = DLIB_MODEL_PATH + ".bz2"
+    urllib.request.urlretrieve(DLIB_MODEL_URL, bz2_path)
+    with bz2.BZ2File(bz2_path) as f, open(DLIB_MODEL_PATH, "wb") as out:
+        out.write(f.read())
+    os.remove(bz2_path)
 
-# Load dlib models
-detector = dlib.get_frontal_face_detector()
-predictor = dlib.shape_predictor(MODEL_PATH)
+face_detector = dlib.get_frontal_face_detector()
+landmark_predictor = dlib.shape_predictor(DLIB_MODEL_PATH)
 
-# -------- Utility Functions --------
-def get_rgb_brightness(r, g, b):
+# =========================
+# Helper functions
+# =========================
+
+def calculate_brightness(r, g, b):
     return 0.299 * r + 0.587 * g + 0.114 * b
 
-def average_color(swatches):
-    if not swatches:
-        return None, None
-    avg = np.mean(np.array(swatches), axis=0).astype(int)
-    hex_val = '#{:02x}{:02x}{:02x}'.format(*avg)
-    return avg.tolist(), hex_val
+def compute_average_color(pixels):
+    if len(pixels) == 0:
+        return [128, 128, 128], "#808080"
 
-def process_image(image_np):
-    original_image = image_np.copy()
+    avg = np.mean(np.array(pixels), axis=0).astype(np.uint8)
+    hex_color = "#{:02x}{:02x}{:02x}".format(*avg)
+    return avg.tolist(), hex_color
 
-    # OpenCV expects BGR
-    bgr_image = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
-    gray = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2GRAY)
+# =========================
+# Core analysis logic
+# =========================
 
-    faces = detector(gray)
+def analyze_face_image(rgb_image: np.ndarray):
+    # Ensure correct format
+    if rgb_image.dtype != np.uint8 or rgb_image.ndim != 3 or rgb_image.shape[2] != 3:
+        return None, "Unsupported image format"
+
+    gray = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2GRAY)
+
+    faces = face_detector(gray)
     if len(faces) == 0:
         return None, "No face detected"
 
-    shape = predictor(gray, faces[0])
-    landmarks = [(pt.x, pt.y) for pt in shape.parts()]
-    custom_points = []
+    landmarks = landmark_predictor(gray, faces[0])
+    points = [(p.x, p.y) for p in landmarks.parts()]
 
-    connection_pairs = [
-        (6, 9), (28, 15), (2, 30), (35, 13), (31, 4),
-        (4, 61), (5, 60), (6, 59), (7, 58), (8, 57),
-        (9, 56), (10, 55), (11, 54), (12, 53),
-        (1, 28), (2, 30), (27, 35), (27, 31), (29, 15), (30, 14)
-    ]
+    sample_points = []
+    pairs = [(6, 9), (28, 15), (2, 30), (35, 13), (31, 4)]
 
-    for start_idx, end_idx in connection_pairs:
-        x1, y1 = landmarks[start_idx]
-        x2, y2 = landmarks[end_idx]
+    for s, e in pairs:
+        x1, y1 = points[s]
+        x2, y2 = points[e]
         for i in range(1, 6):
-            alpha = i / 6
-            xi = int(x1 + alpha * (x2 - x1))
-            yi = int(y1 + alpha * (y2 - y1))
-            custom_points.append((xi, yi))
+            r = i / 6
+            sample_points.append((
+                int(x1 + r * (x2 - x1)),
+                int(y1 + r * (y2 - y1))
+            ))
 
-    brow_indices = [20, 21, 22, 23]
-    for idx in brow_indices:
-        x, y = landmarks[idx]
-        custom_points.append((x, y - 20))
+    light, dark = [], []
 
-    light_swatches, dark_swatches = [], []
-    for (x, y) in custom_points:
-        if 0 <= x < original_image.shape[1] and 0 <= y < original_image.shape[0]:
-            r, g, b = original_image[y, x]
-            brightness = get_rgb_brightness(r, g, b)
-            if brightness > 130:
-                light_swatches.append((r, g, b))
+    for x, y in sample_points:
+        if 0 <= y < rgb_image.shape[0] and 0 <= x < rgb_image.shape[1]:
+            r, g, b = rgb_image[y, x]
+            if calculate_brightness(r, g, b) > 130:
+                light.append((r, g, b))
             else:
-                dark_swatches.append((r, g, b))
+                dark.append((r, g, b))
 
-    avg_light, hex_light = average_color(light_swatches)
-    avg_dark, hex_dark = average_color(dark_swatches)
-    avg_total, hex_total = average_color(light_swatches + dark_swatches)
+    avg_light_rgb, avg_light_hex = compute_average_color(light)
+    avg_dark_rgb, avg_dark_hex = compute_average_color(dark)
+    avg_total_rgb, avg_total_hex = compute_average_color(light + dark)
 
-    light_count = len(light_swatches)
-    dark_count = len(dark_swatches)
-    total = light_count + dark_count
-    diff_ratio = abs(light_count - dark_count) / total if total else 0
-
-    if diff_ratio < 0.5:
+    skin_tone = "light" if len(light) > len(dark) else "dark"
+    if abs(len(light) - len(dark)) / max(len(light) + len(dark), 1) < 0.5:
         skin_tone = "dusky"
-    elif light_count > dark_count:
-        skin_tone = "light"
-    else:
-        skin_tone = "dark"
 
-    r, g, b = avg_total if avg_total else (128, 128, 128)
-    if r > b and r > g:
-        undertone = "warm"
-    elif b > r and b > g:
-        undertone = "cool"
-    else:
-        undertone = "neutral"
+    r, g, b = avg_total_rgb
+    undertone = "warm" if r > b else "cool" if b > r else "neutral"
 
     skin_subtype = f"{skin_tone.capitalize()} {undertone.capitalize()}"
 
-    recommendations = {
+
+    # -------------------------
+    # Color recommendation maps
+    # -------------------------
+
+    recommended_color_map = {
         "Light Warm": [
             {"name": "Peach", "hex": "#FFDAB9", "reason": "Enhances warm glow"},
             {"name": "Coral", "hex": "#FF7F50", "reason": "Adds vibrance"},
@@ -236,7 +231,7 @@ def process_image(image_np):
         ]
     }
 
-    avoid_colors_map = {
+    avoid_color_map = {
             "Light Warm": [
         {"name": "Neon Green", "hex": "#39FF14", "reason": "Too harsh"},
         {"name": "Black", "hex": "#000000", "reason": "Overpowers skin"},
@@ -302,52 +297,43 @@ def process_image(image_np):
     ]
 
     }
-    
-    _, buffer = cv2.imencode(".jpg", cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR))
-    encoded_image = base64.b64encode(buffer).decode("utf-8")
+    recommended_colors = recommended_color_map.get(skin_subtype, [])
+    avoid_colors = avoid_color_map.get(skin_subtype, [])
 
     return {
-        "annotated_image": encoded_image,
         "skin_tone": skin_tone,
         "skin_subtype": skin_subtype,
-        "undertone": undertone,
-        "recommended_colors": [],
-        "avoid_colors": [],
-        "avg_light_rgb": avg_light,
-        "avg_light_hex": hex_light,
-        "avg_dark_rgb": avg_dark,
-        "avg_dark_hex": hex_dark,
-        "avg_total_rgb": avg_total,
-        "avg_total_hex": hex_total,
+        "avg_light_rgb": avg_light_rgb,
+        "avg_light_hex": avg_light_hex,
+        "avg_dark_rgb": avg_dark_rgb,
+        "avg_dark_hex": avg_dark_hex,
+        "avg_total_rgb": avg_total_rgb,
+        "avg_total_hex": avg_total_hex,
+        "recommended_colors": recommended_colors,
+        "avoid_colors": avoid_colors,
     }, None
 
-# -------- API Routes --------
+# =========================
+# Routes
+# =========================
 
 @app.get("/")
 def health():
     return {"message": "API running"}
 
 @app.post("/analyze")
-async def analyze(image: UploadFile = File(...)):
+async def analyze_image(image: UploadFile = File(...)):
     try:
-        contents = await image.read()
+        image_bytes = await image.read()
 
-        # ✅ FIX: enforce dlib-safe image format
-        pil_image = Image.open(io.BytesIO(contents))
+        # STRICT image normalization (fixes your error)
+        pil_image = Image.open(io.BytesIO(image_bytes))
         pil_image = ImageOps.exif_transpose(pil_image)
         pil_image = pil_image.convert("RGB")
 
-        img = np.asarray(pil_image, dtype=np.uint8)
+        rgb_array = np.array(pil_image, dtype=np.uint8)
 
-        # Safety check
-        if img.ndim != 3 or img.shape[2] != 3:
-            return JSONResponse(
-                status_code=400,
-                content={"error": "Invalid image format after conversion"}
-            )
-
-        result, error = process_image(img)
-
+        result, error = analyze_face_image(rgb_array)
         if error:
             return JSONResponse(status_code=400, content={"error": error})
 
