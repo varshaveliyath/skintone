@@ -14,24 +14,14 @@ import numpy as np
 
 from PIL import Image, ImageOps
 
-# 🔹 IMPORT SPLIT COLOR MAPS
 from color_maps import recommended_color_map, avoid_color_map
 
-
-# =========================
-# LOGGING SETUP (RENDER SAFE)
-# =========================
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s | %(levelname)s | %(message)s",
 )
 logger = logging.getLogger(__name__)
-
-
-# =========================
-# App setup
-# =========================
 
 app = FastAPI()
 
@@ -46,34 +36,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-logger.info("✅ FastAPI app initialized")
-
-
-# =========================
-# Dlib model setup
-# =========================
-
 DLIB_MODEL_URL = "http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2"
 DLIB_MODEL_PATH = "shape_predictor_68_face_landmarks.dat"
 
 if not os.path.exists(DLIB_MODEL_PATH):
-    logger.info("⬇️ Downloading dlib model...")
     bz2_path = DLIB_MODEL_PATH + ".bz2"
     urllib.request.urlretrieve(DLIB_MODEL_URL, bz2_path)
     with bz2.BZ2File(bz2_path) as f, open(DLIB_MODEL_PATH, "wb") as out:
         out.write(f.read())
     os.remove(bz2_path)
-    logger.info("✅ dlib model downloaded")
 
 face_detector = dlib.get_frontal_face_detector()
 landmark_predictor = dlib.shape_predictor(DLIB_MODEL_PATH)
 
-logger.info("✅ dlib face detector loaded")
-
-
-# =========================
-# Helper functions
-# =========================
 
 def calculate_brightness(r, g, b):
     return 0.299 * r + 0.587 * g + 0.114 * b
@@ -84,44 +59,31 @@ def compute_average_color(pixels):
         return [128, 128, 128], "#808080"
 
     avg = np.mean(np.array(pixels), axis=0).astype(np.uint8)
-    hex_color = "#{:02x}{:02x}{:02x}".format(*avg)
-    return avg.tolist(), hex_color
+    return avg.tolist(), "#{:02x}{:02x}{:02x}".format(*avg)
 
-
-# =========================
-# Core analysis logic
-# =========================
 
 def analyze_face_image(rgb_image: np.ndarray):
     logger.info("🧠 Starting face analysis")
 
-    if not isinstance(rgb_image, np.ndarray):
-        return None, "Invalid image data"
-
-    if rgb_image.ndim != 3 or rgb_image.shape[2] != 3:
-        return None, "Unsupported image type, must be RGB"
-
-    # ✅ ONLY SAFE WAY (Render/Linux)
-    rgb_image = np.ascontiguousarray(rgb_image, dtype=np.uint8).copy()
+    rgb_image = np.ascontiguousarray(rgb_image, dtype=np.uint8)
 
     logger.info(
-        f"📸 Image shape: {rgb_image.shape}, "
-        f"dtype: {rgb_image.dtype}, "
-        f"contiguous: {rgb_image.flags['C_CONTIGUOUS']}"
+        f"📸 Image shape: {rgb_image.shape}, dtype: {rgb_image.dtype}, contiguous: {rgb_image.flags['C_CONTIGUOUS']}"
     )
 
     gray = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2GRAY)
-    gray = np.ascontiguousarray(gray, dtype=np.uint8).copy()
+    gray = np.ascontiguousarray(gray, dtype=np.uint8)
+
+    # ✅ THE CRITICAL FIX
+    gray_dlib = dlib.array2d(gray)
 
     logger.info("🔍 Running face detector")
-    faces = face_detector(gray)
-
-    logger.info(f"🙂 Faces detected: {len(faces)}")
+    faces = face_detector(gray_dlib)
 
     if len(faces) == 0:
         return None, "No face detected"
 
-    landmarks = landmark_predictor(gray, faces[0])
+    landmarks = landmark_predictor(gray_dlib, faces[0])
     points = [(p.x, p.y) for p in landmarks.parts()]
 
     sample_points = []
@@ -157,7 +119,6 @@ def analyze_face_image(rgb_image: np.ndarray):
 
     r, g, b = avg_total_rgb
     undertone = "Warm" if r > b else "Cool" if b > r else "Neutral"
-
     skin_subtype = f"{skin_tone.capitalize()} {undertone}"
 
     return {
@@ -174,10 +135,6 @@ def analyze_face_image(rgb_image: np.ndarray):
         "avoid_colors": avoid_color_map.get(skin_subtype, []),
     }, None
 
-
-# =========================
-# Routes
-# =========================
 
 @app.get("/")
 def health():
