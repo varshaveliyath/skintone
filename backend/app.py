@@ -50,16 +50,8 @@ logger.info("✅ FastAPI app initialized")
 # Dlib model setup
 # =========================
 DLIB_MODEL_URL = "http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2"
-DLIB_MODEL_PATH = "shape_predictor_68_face_landmarks.dat"
+DLIB_MODEL_PATH = "backend//shape_predictor_68_face_landmarks.dat"
 
-if not os.path.exists(DLIB_MODEL_PATH):
-    logger.info("⬇️ Downloading dlib model...")
-    bz2_path = DLIB_MODEL_PATH + ".bz2"
-    urllib.request.urlretrieve(DLIB_MODEL_URL, bz2_path)
-    with bz2.BZ2File(bz2_path) as f, open(DLIB_MODEL_PATH, "wb") as out:
-        out.write(f.read())
-    os.remove(bz2_path)
-    logger.info("✅ dlib model downloaded")
 
 face_detector = dlib.get_frontal_face_detector()
 landmark_predictor = dlib.shape_predictor(DLIB_MODEL_PATH)
