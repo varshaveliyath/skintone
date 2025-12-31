@@ -1,15 +1,17 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+
 import io
+import os
+import bz2
+import urllib.request
+
 import cv2
 import dlib
 import numpy as np
-import os
-import urllib.request
-import bz2
 
-from PIL import Image
+from PIL import Image, ImageOps
 
 # 🔹 IMPORT SPLIT COLOR MAPS
 from color_maps import recommended_color_map, avoid_color_map
@@ -71,15 +73,18 @@ def compute_average_color(pixels):
 # =========================
 
 def analyze_face_image(rgb_image: np.ndarray):
-    # 🔹 HARD GUARANTEE IMAGE FORMAT (fixes unsupported image error)
+    # 🔹 ABSOLUTE dlib-safe guarantees
     if rgb_image is None:
         return None, "Invalid image data"
 
     if rgb_image.ndim != 3 or rgb_image.shape[2] != 3:
         return None, "Unsupported image type, must be RGB"
 
-    rgb_image = rgb_image.astype(np.uint8)
+    if rgb_image.dtype != np.uint8:
+        rgb_image = rgb_image.astype(np.uint8)
 
+    if not rgb_image.flags["C_CONTIGUOUS"]:
+        rgb_image = np.ascontiguousarray(rgb_image)
 
     gray = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2GRAY)
     faces = face_detector(gray)
@@ -135,9 +140,9 @@ def analyze_face_image(rgb_image: np.ndarray):
 
     skin_subtype = f"{skin_tone.capitalize()} {undertone}"
 
-    # 🔹 ALIGN WITH color_maps.py KEYS
-    recommended_colors = recommended_color_map.get(undertone, [])
-    avoid_colors = avoid_color_map.get(undertone, [])
+    # 🔹 CORRECT MAP LOOKUP (VERY IMPORTANT)
+    recommended_colors = recommended_color_map.get(skin_subtype, [])
+    avoid_colors = avoid_color_map.get(skin_subtype, [])
 
     return {
         "skin_tone": skin_tone,
@@ -168,9 +173,12 @@ async def analyze_image(image: UploadFile = File(...)):
     try:
         image_bytes = await image.read()
 
-        # 🔹 FORCE IMAGE CONVERSION USING PIL (critical fix)
-        pil_image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-        rgb_image = np.array(pil_image)
+        # 🔹 BULLETPROOF IMAGE NORMALIZATION (FINAL FIX)
+        pil_image = Image.open(io.BytesIO(image_bytes))
+        pil_image = ImageOps.exif_transpose(pil_image)
+        pil_image = pil_image.convert("RGB")
+
+        rgb_image = np.array(pil_image, dtype=np.uint8)
 
         result, error = analyze_face_image(rgb_image)
 
@@ -180,6 +188,7 @@ async def analyze_image(image: UploadFile = File(...)):
         return result
 
     except Exception as e:
+        print("SERVER ERROR:", str(e))
         return JSONResponse(
             status_code=500,
             content={"error": str(e)}
