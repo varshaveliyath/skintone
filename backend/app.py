@@ -111,7 +111,7 @@ def analyze_face_image(rgb_image: np.ndarray):
     gray = np.ascontiguousarray(gray, dtype=np.uint8)
 
     logger.info("🔍 Running face detector")
-    faces = face_detector(gray)
+    faces = face_detector(rgb_image)
 
     logger.info(f"🙂 Faces detected: {len(faces)}")
 
