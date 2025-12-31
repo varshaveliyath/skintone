@@ -95,16 +95,19 @@ def compute_average_color(pixels):
 def analyze_face_image(rgb_image: np.ndarray):
     logger.info("🧠 Starting face analysis")
 
-    if rgb_image is None:
-        logger.error("❌ rgb_image is None")
+    if not isinstance(rgb_image, np.ndarray):
+        logger.error("❌ Input is not numpy array")
         return None, "Invalid image data"
+
+    if rgb_image.dtype != np.uint8:
+        rgb_image = rgb_image.astype(np.uint8)
 
     if rgb_image.ndim != 3 or rgb_image.shape[2] != 3:
         logger.error(f"❌ Invalid image shape: {rgb_image.shape}")
         return None, "Unsupported image type, must be RGB"
 
-    # 🔥 CRITICAL FIX — dlib requires writable, contiguous uint8
-    rgb_image = np.ascontiguousarray(rgb_image, dtype=np.uint8)
+    # 🔥 HARD REQUIREMENTS FOR DLIB
+    rgb_image = np.ascontiguousarray(rgb_image)
     rgb_image.setflags(write=True)
 
     logger.info(
@@ -114,8 +117,13 @@ def analyze_face_image(rgb_image: np.ndarray):
         f"writeable: {rgb_image.flags['WRITEABLE']}"
     )
 
+    # 🔥 FORCE TRUE GRAYSCALE FOR DLIB
     gray = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2GRAY)
     gray = np.ascontiguousarray(gray, dtype=np.uint8)
+
+    logger.info(
+        f"🔍 Grayscale image: shape={gray.shape}, dtype={gray.dtype}"
+    )
 
     logger.info("🔍 Running face detector")
     faces = face_detector(gray)
@@ -135,10 +143,10 @@ def analyze_face_image(rgb_image: np.ndarray):
         x1, y1 = points[s]
         x2, y2 = points[e]
         for i in range(1, 6):
-            r = i / 6
+            t = i / 6
             sample_points.append((
-                int(x1 + r * (x2 - x1)),
-                int(y1 + r * (y2 - y1))
+                int(x1 + t * (x2 - x1)),
+                int(y1 + t * (y2 - y1))
             ))
 
     light, dark = [], []
@@ -171,9 +179,6 @@ def analyze_face_image(rgb_image: np.ndarray):
 
     logger.info(f"🎨 Skin subtype: {skin_subtype}")
 
-    recommended_colors = recommended_color_map.get(skin_subtype, [])
-    avoid_colors = avoid_color_map.get(skin_subtype, [])
-
     return {
         "skin_tone": skin_tone,
         "skin_subtype": skin_subtype,
@@ -184,8 +189,8 @@ def analyze_face_image(rgb_image: np.ndarray):
         "avg_dark_hex": avg_dark_hex,
         "avg_total_rgb": avg_total_rgb,
         "avg_total_hex": avg_total_hex,
-        "recommended_colors": recommended_colors,
-        "avoid_colors": avoid_colors,
+        "recommended_colors": recommended_color_map.get(skin_subtype, []),
+        "avoid_colors": avoid_color_map.get(skin_subtype, []),
     }, None
 
 
@@ -211,7 +216,7 @@ async def analyze_image(image: UploadFile = File(...)):
         pil_image = ImageOps.exif_transpose(pil_image)
         pil_image = pil_image.convert("RGB")
 
-        rgb_image = np.array(pil_image, dtype=np.uint8)
+        rgb_image = np.asarray(pil_image, dtype=np.uint8)
 
         result, error = analyze_face_image(rgb_image)
 
@@ -222,9 +227,9 @@ async def analyze_image(image: UploadFile = File(...)):
         logger.info("✅ Analysis successful")
         return result
 
-    except Exception as e:
+    except Exception:
         logger.exception("💥 SERVER CRASH")
         return JSONResponse(
             status_code=500,
-            content={"error": str(e)}
+            content={"error": "Internal server error"}
         )
