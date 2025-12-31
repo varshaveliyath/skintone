@@ -45,18 +45,26 @@ app.add_middleware(
 
 logger.info("✅ FastAPI app initialized")
 
-
 # =========================
 # Dlib model setup
 # =========================
-DLIB_MODEL_URL = "http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2"
-DLIB_MODEL_PATH = "backend//shape_predictor_68_face_landmarks.dat"
 
+DLIB_MODEL_PATH = "shape_predictor_68_face_landmarks.dat"
 
+# 🚫 DO NOT DOWNLOAD AT RUNTIME (Render unsafe)
+if not os.path.exists(DLIB_MODEL_PATH):
+    logger.error("❌ shape_predictor_68_face_landmarks.dat NOT FOUND")
+    logger.error("❌ Place the file in the backend folder and redeploy")
+    raise RuntimeError("Missing dlib shape predictor model")
+
+# ✅ Lightweight detector (always safe)
 face_detector = dlib.get_frontal_face_detector()
+
+# ✅ Heavy model — must load successfully or app should fail
 landmark_predictor = dlib.shape_predictor(DLIB_MODEL_PATH)
 
 logger.info("✅ dlib face detector loaded")
+
 
 
 # =========================
@@ -103,7 +111,7 @@ def analyze_face_image(rgb_image: np.ndarray):
 
     # ✅ FINAL & CORRECT dlib call
     logger.info("🔍 Running face detector")
-    faces = face_detector(rgb_image,1)
+    faces = face_detector(gray)
 
     logger.info(f"🙂 Faces detected: {len(faces)}")
 
@@ -117,7 +125,20 @@ def analyze_face_image(rgb_image: np.ndarray):
     # Sample skin pixels
     # =========================
     sample_points = []
-    pairs = [(6, 9), (28, 15), (2, 30), (35, 13), (31, 4)]
+    pairs = [
+    # Jaw ↔ mid-face
+    (1, 31), (2, 31), (3, 31), (4, 31), (5, 31),
+    (11, 35), (12, 35), (13, 35), (14, 35), (15, 35),
+
+    # Cheek ↔ nose bridge
+    (6, 28), (7, 28), (8, 28), (9, 28), (10, 28),
+
+    # Nose bridge ↔ jaw center
+    (27, 8), (28, 8), (29, 8),
+
+    # Upper cheek cross-samples
+    (31, 48), (35, 54)
+]
 
     for s, e in pairs:
         x1, y1 = points[s]
