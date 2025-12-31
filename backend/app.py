@@ -111,7 +111,7 @@ def analyze_face_image(rgb_image: np.ndarray):
 
     # ✅ FINAL & CORRECT dlib call
     logger.info("🔍 Running face detector")
-    faces = face_detector(gray)
+    faces = face_detector(rgb_image,1)
 
     logger.info(f"🙂 Faces detected: {len(faces)}")
 
