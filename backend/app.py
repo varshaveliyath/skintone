@@ -96,34 +96,22 @@ def analyze_face_image(rgb_image: np.ndarray):
     logger.info("🧠 Starting face analysis")
 
     if not isinstance(rgb_image, np.ndarray):
-        logger.error("❌ Input is not numpy array")
         return None, "Invalid image data"
 
-    if rgb_image.dtype != np.uint8:
-        rgb_image = rgb_image.astype(np.uint8)
-
     if rgb_image.ndim != 3 or rgb_image.shape[2] != 3:
-        logger.error(f"❌ Invalid image shape: {rgb_image.shape}")
         return None, "Unsupported image type, must be RGB"
 
-    # 🔥 HARD REQUIREMENTS FOR DLIB
-    rgb_image = np.ascontiguousarray(rgb_image)
-    rgb_image.setflags(write=True)
+    # ✅ ONLY SAFE WAY (Render/Linux)
+    rgb_image = np.ascontiguousarray(rgb_image, dtype=np.uint8).copy()
 
     logger.info(
         f"📸 Image shape: {rgb_image.shape}, "
         f"dtype: {rgb_image.dtype}, "
-        f"contiguous: {rgb_image.flags['C_CONTIGUOUS']}, "
-        f"writeable: {rgb_image.flags['WRITEABLE']}"
+        f"contiguous: {rgb_image.flags['C_CONTIGUOUS']}"
     )
 
-    # 🔥 FORCE TRUE GRAYSCALE FOR DLIB
     gray = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2GRAY)
-    gray = np.ascontiguousarray(gray, dtype=np.uint8)
-
-    logger.info(
-        f"🔍 Grayscale image: shape={gray.shape}, dtype={gray.dtype}"
-    )
+    gray = np.ascontiguousarray(gray, dtype=np.uint8).copy()
 
     logger.info("🔍 Running face detector")
     faces = face_detector(gray)
@@ -168,16 +156,9 @@ def analyze_face_image(rgb_image: np.ndarray):
         skin_tone = "dusky"
 
     r, g, b = avg_total_rgb
-    if r > b:
-        undertone = "Warm"
-    elif b > r:
-        undertone = "Cool"
-    else:
-        undertone = "Neutral"
+    undertone = "Warm" if r > b else "Cool" if b > r else "Neutral"
 
     skin_subtype = f"{skin_tone.capitalize()} {undertone}"
-
-    logger.info(f"🎨 Skin subtype: {skin_subtype}")
 
     return {
         "skin_tone": skin_tone,
@@ -200,36 +181,27 @@ def analyze_face_image(rgb_image: np.ndarray):
 
 @app.get("/")
 def health():
-    logger.info("💓 Health check hit")
     return {"message": "API running"}
 
 
 @app.post("/analyze")
 async def analyze_image(image: UploadFile = File(...)):
-    logger.info("🔥 /analyze endpoint HIT")
-
     try:
         image_bytes = await image.read()
-        logger.info(f"📦 Image received: {len(image_bytes)} bytes")
 
         pil_image = Image.open(io.BytesIO(image_bytes))
         pil_image = ImageOps.exif_transpose(pil_image)
         pil_image = pil_image.convert("RGB")
 
-        rgb_image = np.asarray(pil_image, dtype=np.uint8)
+        rgb_image = np.array(pil_image, dtype=np.uint8)
 
         result, error = analyze_face_image(rgb_image)
 
         if error:
-            logger.warning(f"⚠️ Analysis error: {error}")
             return JSONResponse(status_code=400, content={"error": error})
 
-        logger.info("✅ Analysis successful")
         return result
 
-    except Exception:
+    except Exception as e:
         logger.exception("💥 SERVER CRASH")
-        return JSONResponse(
-            status_code=500,
-            content={"error": "Internal server error"}
-        )
+        return JSONResponse(status_code=500, content={"error": str(e)})
