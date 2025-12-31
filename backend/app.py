@@ -103,9 +103,16 @@ def analyze_face_image(rgb_image: np.ndarray):
         logger.error(f"❌ Invalid image shape: {rgb_image.shape}")
         return None, "Unsupported image type, must be RGB"
 
+    # 🔥 CRITICAL FIX — dlib requires writable, contiguous uint8
     rgb_image = np.ascontiguousarray(rgb_image, dtype=np.uint8)
+    rgb_image.setflags(write=True)
 
-    logger.info(f"📸 Image shape: {rgb_image.shape}, dtype: {rgb_image.dtype}")
+    logger.info(
+        f"📸 Image shape: {rgb_image.shape}, "
+        f"dtype: {rgb_image.dtype}, "
+        f"contiguous: {rgb_image.flags['C_CONTIGUOUS']}, "
+        f"writeable: {rgb_image.flags['WRITEABLE']}"
+    )
 
     gray = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2GRAY)
     gray = np.ascontiguousarray(gray, dtype=np.uint8)
