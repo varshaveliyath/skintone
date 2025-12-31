@@ -6,6 +6,7 @@ import io
 import os
 import bz2
 import urllib.request
+import logging
 
 import cv2
 import dlib
@@ -15,6 +16,17 @@ from PIL import Image, ImageOps
 
 # 🔹 IMPORT SPLIT COLOR MAPS
 from color_maps import recommended_color_map, avoid_color_map
+
+
+# =========================
+# LOGGING SETUP (RENDER SAFE)
+# =========================
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s",
+)
+logger = logging.getLogger(__name__)
 
 
 # =========================
@@ -34,6 +46,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+logger.info("✅ FastAPI app initialized")
+
+
 # =========================
 # Dlib model setup
 # =========================
@@ -42,14 +57,19 @@ DLIB_MODEL_URL = "http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz
 DLIB_MODEL_PATH = "shape_predictor_68_face_landmarks.dat"
 
 if not os.path.exists(DLIB_MODEL_PATH):
+    logger.info("⬇️ Downloading dlib model...")
     bz2_path = DLIB_MODEL_PATH + ".bz2"
     urllib.request.urlretrieve(DLIB_MODEL_URL, bz2_path)
     with bz2.BZ2File(bz2_path) as f, open(DLIB_MODEL_PATH, "wb") as out:
         out.write(f.read())
     os.remove(bz2_path)
+    logger.info("✅ dlib model downloaded")
 
 face_detector = dlib.get_frontal_face_detector()
 landmark_predictor = dlib.shape_predictor(DLIB_MODEL_PATH)
+
+logger.info("✅ dlib face detector loaded")
+
 
 # =========================
 # Helper functions
@@ -73,21 +93,27 @@ def compute_average_color(pixels):
 # =========================
 
 def analyze_face_image(rgb_image: np.ndarray):
-    # 🔹 ABSOLUTE dlib-safe guarantees
+    logger.info("🧠 Starting face analysis")
+
     if rgb_image is None:
+        logger.error("❌ rgb_image is None")
         return None, "Invalid image data"
 
     if rgb_image.ndim != 3 or rgb_image.shape[2] != 3:
+        logger.error(f"❌ Invalid image shape: {rgb_image.shape}")
         return None, "Unsupported image type, must be RGB"
 
-    if rgb_image.dtype != np.uint8:
-        rgb_image = rgb_image.astype(np.uint8)
+    rgb_image = np.ascontiguousarray(rgb_image, dtype=np.uint8)
 
-    if not rgb_image.flags["C_CONTIGUOUS"]:
-        rgb_image = np.ascontiguousarray(rgb_image)
+    logger.info(f"📸 Image shape: {rgb_image.shape}, dtype: {rgb_image.dtype}")
 
     gray = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2GRAY)
+    gray = np.ascontiguousarray(gray, dtype=np.uint8)
+
+    logger.info("🔍 Running face detector")
     faces = face_detector(gray)
+
+    logger.info(f"🙂 Faces detected: {len(faces)}")
 
     if len(faces) == 0:
         return None, "No face detected"
@@ -122,10 +148,6 @@ def analyze_face_image(rgb_image: np.ndarray):
     avg_dark_rgb, avg_dark_hex = compute_average_color(dark)
     avg_total_rgb, avg_total_hex = compute_average_color(light + dark)
 
-    # =========================
-    # Skin tone classification
-    # =========================
-
     skin_tone = "light" if len(light) > len(dark) else "dark"
     if abs(len(light) - len(dark)) / max(len(light) + len(dark), 1) < 0.5:
         skin_tone = "dusky"
@@ -140,7 +162,8 @@ def analyze_face_image(rgb_image: np.ndarray):
 
     skin_subtype = f"{skin_tone.capitalize()} {undertone}"
 
-    # 🔹 CORRECT MAP LOOKUP (VERY IMPORTANT)
+    logger.info(f"🎨 Skin subtype: {skin_subtype}")
+
     recommended_colors = recommended_color_map.get(skin_subtype, [])
     avoid_colors = avoid_color_map.get(skin_subtype, [])
 
@@ -165,15 +188,18 @@ def analyze_face_image(rgb_image: np.ndarray):
 
 @app.get("/")
 def health():
+    logger.info("💓 Health check hit")
     return {"message": "API running"}
 
 
 @app.post("/analyze")
 async def analyze_image(image: UploadFile = File(...)):
+    logger.info("🔥 /analyze endpoint HIT")
+
     try:
         image_bytes = await image.read()
+        logger.info(f"📦 Image received: {len(image_bytes)} bytes")
 
-        # 🔹 BULLETPROOF IMAGE NORMALIZATION (FINAL FIX)
         pil_image = Image.open(io.BytesIO(image_bytes))
         pil_image = ImageOps.exif_transpose(pil_image)
         pil_image = pil_image.convert("RGB")
@@ -183,12 +209,14 @@ async def analyze_image(image: UploadFile = File(...)):
         result, error = analyze_face_image(rgb_image)
 
         if error:
+            logger.warning(f"⚠️ Analysis error: {error}")
             return JSONResponse(status_code=400, content={"error": error})
 
+        logger.info("✅ Analysis successful")
         return result
 
     except Exception as e:
-        print("SERVER ERROR:", str(e))
+        logger.exception("💥 SERVER CRASH")
         return JSONResponse(
             status_code=500,
             content={"error": str(e)}
