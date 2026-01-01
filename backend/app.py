@@ -49,7 +49,10 @@ logger.info("✅ FastAPI app initialized")
 # Dlib model setup
 # =========================
 
-DLIB_MODEL_PATH = "shape_predictor_68_face_landmarks.dat"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DLIB_MODEL_PATH = os.path.join(BASE_DIR, "shape_predictor_68_face_landmarks.dat")
+
+logger.info(f"📂 Looking for dlib model at: {DLIB_MODEL_PATH}")
 
 # 🚫 DO NOT DOWNLOAD AT RUNTIME (Render unsafe)
 if not os.path.exists(DLIB_MODEL_PATH):
