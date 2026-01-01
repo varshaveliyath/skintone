@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Loader2, Mail, Linkedin } from "lucide-react";
+import { Loader2, Mail, Linkedin, Github } from "lucide-react";
+
 
 export default function ImageAnalysisPage() {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -131,13 +132,44 @@ const handleAnalyze = async () => {
     "Overall styling logic: Dark neutral skin is most powerful when balance meets richness — controlled contrast is key."
   ]
 };
+const getOutfitPairs = (result) => {
+  if (!result?.recommended_colors) return [];
+
+  const colors = result.recommended_colors.slice(0, 3);
+
+  const jewelryMap = {
+    Warm: "Gold",
+    Cool: "Silver",
+    Neutral: "Gold or Silver",
+  };
+
+  const undertone =
+    result.skin_subtype.includes("Warm")
+      ? "Warm"
+      : result.skin_subtype.includes("Cool")
+      ? "Cool"
+      : "Neutral";
+
+  const neutralBottoms = [
+    { name: "Black", hex: "#000000" },
+    { name: "Beige", hex: "#E6D5B8" },
+    { name: "Navy", hex: "#1F2A44" },
+  ];
+
+  return colors.map((color, index) => ({
+    top: color,
+    bottom: neutralBottoms[index % neutralBottoms.length],
+    jewelry: jewelryMap[undertone],
+    reason: `${color.name} complements your ${result.skin_subtype.toLowerCase()} skin, while ${neutralBottoms[index % neutralBottoms.length].name.toLowerCase()} grounds the look and keeps it balanced.`,
+  }));
+};
 
 return (
   <main className="flex flex-col min-h-screen bg-gradient-to-b from-purple-50 to-white">
     {/* Header */}
     <header className="w-full bg-gradient-to-r from-purple-700 to-purple-900 py-5 shadow-md">
       <h1 className="text-sm sm:text-base font-medium text-white text-center px-4">
-        Discover your natural tones through AI-powered skin analysis
+        Know more about what suits your skintone! 
       </h1>
     </header>
 
@@ -152,7 +184,7 @@ return (
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center shadow-sm">
           <p className="text-sm text-amber-800 leading-relaxed">
             Upload a clear, front-facing photo in natural lighting. Avoid makeup,
-            filters, or accessories for the most accurate analysis.
+            filters, or accessories for the most accurate analysis. Results may differ due to lighting.
           </p>
         </div>
       </div>
@@ -321,6 +353,57 @@ return (
                 ))}
               </div>
             </div>
+            {/* Outfit Pairing Guide */}
+<div className="mt-12">
+  <h3 className="text-lg font-semibold text-gray-700 mb-4">
+    Quick Outfit Pairing Guide
+  </h3>
+
+  <div className="space-y-4">
+    {getOutfitPairs(result).map((pair, idx) => (
+      <div
+        key={idx}
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-purple-50 rounded-xl p-4 border"
+      >
+        {/* Colors */}
+        <div className="flex items-center gap-5">
+          {/* Top */}
+          <div className="text-center">
+            <div
+              className="w-10 h-10 rounded-full border"
+              style={{ backgroundColor: pair.top.hex }}
+              title={pair.top.name}
+            />
+            <p className="text-xs mt-1 font-medium">Top</p>
+            <p className="text-[11px] text-gray-600">{pair.top.name}</p>
+          </div>
+
+          {/* Bottom */}
+          <div className="text-center">
+            <div
+              className="w-10 h-10 rounded-full border"
+              style={{ backgroundColor: pair.bottom.hex }}
+              title={pair.bottom.name}
+            />
+            <p className="text-xs mt-1 font-medium">Bottom</p>
+            <p className="text-[11px] text-gray-600">{pair.bottom.name}</p>
+          </div>
+        </div>
+
+        {/* Jewelry + Reason */}
+        <div className="flex-1">
+          <p className="text-sm text-gray-700">
+            <span className="font-semibold">Jewelry:</span> {pair.jewelry}
+          </p>
+          <p className="text-xs text-gray-600 mt-1 leading-relaxed">
+            {pair.reason}
+          </p>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
 
             {/* Avoid */}
             <div>
@@ -353,26 +436,35 @@ return (
     </div>
 
     {/* Footer */}
-    <footer className="mt-14 px-6 pb-6 text-center text-sm text-gray-500">
-      <div className="max-w-md mx-auto border-t border-gray-300 mb-4" />
-      <div className="flex justify-center gap-10 mb-2">
-        <a
-          href="https://www.linkedin.com/in/varshaveliyath"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-purple-600 hover:text-purple-800"
-        >
-          <Linkedin className="h-5 w-5" />
-        </a>
-        <a
-          href="mailto:veliyathvarsha@gmail.com"
-          className="text-purple-600 hover:text-purple-800"
-        >
-          <Mail className="h-5 w-5" />
-        </a>
-      </div>
-      <p>© {new Date().getFullYear()} All Rights Reserved.</p>
-    </footer>
+<footer className="mt-14 px-6 pb-6 text-center text-sm text-gray-500">
+  <div className="max-w-md mx-auto border-t border-gray-300 mb-4" />
+  <div className="flex justify-center gap-10 mb-2">
+    <a
+      href="https://www.linkedin.com/in/varshaveliyath"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-purple-600 hover:text-purple-800"
+    >
+      <Linkedin className="h-5 w-5" />
+    </a>
+    <a
+      href="mailto:veliyathvarsha@gmail.com"
+      className="text-purple-600 hover:text-purple-800"
+    >
+      <Mail className="h-5 w-5" />
+    </a>
+    <a
+      href="https://github.com/varshaveliyath"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-purple-600 hover:text-purple-800"
+    >
+      <Github className="h-5 w-5" />
+    </a>
+  </div>
+  <p>© {new Date().getFullYear()} All Rights Reserved.</p>
+</footer>
+
   </main>
 );
 }
