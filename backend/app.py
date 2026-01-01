@@ -216,7 +216,17 @@ async def analyze_image(image: UploadFile = File(...)):
         pil_image = ImageOps.exif_transpose(pil_image)
         pil_image = pil_image.convert("RGB")
 
-        rgb_image = np.array(pil_image, dtype=np.uint8)
+        # 🔒 FORCE FILE-BASED NORMALIZATION (dlib-safe)
+        TEMP_PATH = "/tmp/upload.jpg"
+
+        pil_image.save(TEMP_PATH, format="JPEG", quality=95)
+
+# Reload exactly like test.py
+        bgr = cv2.imread(TEMP_PATH)
+        if bgr is None:
+            raise RuntimeError("Failed to reload image from disk")
+
+        rgb_image = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
 
         result, error = analyze_face_image(rgb_image)
 
