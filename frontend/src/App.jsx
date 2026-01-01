@@ -59,219 +59,307 @@ const handleAnalyze = async () => {
 
   // --- Professional descriptions for each skin subtype ---
   const subtypeDescriptions = {
-    "Light Warm":
-      "Light warm skin tones have delicate peachy, golden, or ivory undertones. These tones naturally radiate warmth but can be easily overshadowed by icy blues, silvers, or grays, which contrast too sharply and create a washed-out look. Instead, soft earthy shades, coral pinks, warm beiges, and creamy pastels harmonize beautifully with the skin. Gold jewelry tends to flatter more than silver, and muted warm tones like terracotta, apricot, and sage enhance the fresh glow of this subtype.",
-    "Light Cool":
-      "Light cool skin tones carry gentle pink, rosy, or bluish undertones. Warm and overly yellow colors such as mustard or bright orange can clash, giving the complexion an unbalanced or flushed look. Instead, shades like lavender, icy pinks, mint green, powder blue, and jewel tones such as amethyst or sapphire create elegance and clarity. Silver jewelry complements these tones better than gold. Crisp cool colors highlight the skin's natural brightness without overwhelming its delicacy.",
-    "Light Neutral":
-      "Light neutral skin tones balance soft warm and cool undertones, creating a versatile base. Because they don't lean strongly in either direction, overly intense hues, like neon shades, can overpower the natural balance. Soft neutrals such as taupe, blush pink, dusty lavender, and creamy beige highlight the skin's harmony. Both silver and gold jewelry suit this subtype, but rose gold is particularly flattering. Light neutrals work best with subtle contrasts and gentle, blended shades rather than stark opposites.",
-    "Dusky Warm":
-      "Dusky warm skin tones feature golden, amber, or olive undertones layered over a medium-deep complexion. These tones radiate depth and richness, but overly cool shades like icy blue, stark gray, or lavender can make the skin look dull. Instead, warm earthy hues: burnt orange, copper, turmeric yellow, teal, and deep greens, enhance vibrancy. Gold jewelry brings out warmth, while fabrics with sheen like silk or satin elevate the glow. This subtype looks particularly striking in autumnal palettes.",
-    "Dusky Cool":
-      "Dusky cool skin tones carry bluish or rosy undertones over a medium-deep complexion. Overly warm tones like mustard, pumpkin orange, or golden yellow can overpower the coolness of the skin. Jewel tones: emerald, plum, ruby, sapphire, and berry shades, add a sophisticated vibrance. Dusty mauves, navy, and icy pastels also flatter beautifully. Silver jewelry often complements these tones better, though platinum or white gold adds even more refinement. Dusky cool skin shines with colors that emphasize richness without leaning too warm.",
-    "Dusky Neutral":
-      "Dusky neutral skin tones strike a balance between warm golden and cool bluish undertones across a deeper complexion. This versatility allows them to wear both warm and cool shades, though extremes on either side can look mismatched. Muted jewel tones like deep teal, burgundy, olive, charcoal, and coffee brown enhance the natural harmony. Both silver and gold jewelry complement this subtype, with mixed metals looking especially chic. Dusky neutrals carry off bold palettes well, provided the colors aren't overly neon or icy.",
-    "Dark Warm":
-      "Dark warm skin tones glow with golden, bronze, or earthy undertones, offering a radiant base for bold styling. Light pastels or overly cool shades can feel flat and fail to capture the richness of the skin. Instead, saturated jewel tones: emerald, mustard, ruby red, burnt orange, and forest green, create a striking balance. Metallic gold enhances the warmth, and rich earth tones like terracotta and mahogany emphasize depth. Fabrics with warmth and texture, such as velvet or brocade, highlight the natural vibrance of this subtype.",
-    "Dark Cool":
-      "Dark cool skin tones feature bluish, violet, or deep rosy undertones, creating a naturally regal base. Bright yellows, golden oranges, or warm mustard shades can clash harshly with this subtype. Instead, cool vivid colors: royal blue, plum, magenta, amethyst, and fuchsia, add brilliance and sophistication. Silver, platinum, and white gold jewelry complement the undertones best, while deep, cool neutrals like navy, charcoal, and black bring elegance. Dark cool tones pair beautifully with jewel-inspired palettes that emphasize contrast and richness.",
-    "Dark Neutral":
-      "Dark neutral skin tones combine both warm and cool undertones, creating a deep, versatile complexion. This balance allows for a wide range of colors, though extremely warm oranges or icy blues may look unflattering. Earthy neutrals like mocha, espresso, deep olive, and burgundy provide harmony, while jewel tones such as teal, garnet, and sapphire create bold impact. Both gold and silver jewelry complement this subtype, making it adaptable to personal style. Dark neutral tones excel in palettes that combine richness with balance, avoiding extremes."
-  };
+  "Light Warm": [
+    "What suits & why: Soft warm shades like peach, coral, warm beige, ivory, apricot, and light terracotta suit light warm skin because they echo the skin’s natural golden and peach undertones, creating a seamless, glowing look rather than contrast-heavy separation.",
+    "What to avoid & why: Icy blues, cool greys, stark white, and silver-heavy tones should be avoided because they oppose the warmth in the skin, draining color from the face and making the complexion appear washed out or dull.",
+    "Jewelry & why: Yellow gold and soft rose gold flatter best because warm metals reflect golden light back onto the skin, enhancing brightness, whereas silver can look too harsh and flat against warm undertones.",
+    "Fabric & finish guidance & why: Soft, matte, or lightly luminous fabrics like cotton, silk blends, or chiffon work well because overly shiny or stark textures can overpower the delicacy of light warm skin.",
+    "Overall styling logic: Light warm skin looks healthiest when warmth is maintained consistently — gentle warmth enhances glow, while cool extremes break harmony."
+  ],
 
-  return (
-    <main className="flex flex-col min-h-screen bg-white">
-      <header className="w-full bg-gradient-to-r from-purple-700 to-purple-800 border-b border-gray-200 py-4 mb-4 shadow-sm">
-        <h1 className="text-sm sm:text-base font-normal text-white text-center">
-          Hi there!  Discover your natural tones and personal color analysis.
-        </h1>
-      </header>
+  "Light Cool": [
+    "What suits & why: Cool pastels, lavender, icy pinks, powder blue, mint, and jewel tones like sapphire or amethyst work well because they align with the skin’s pink or bluish undertones, preserving clarity and freshness.",
+    "What to avoid & why: Mustard, orange, camel, and overly yellow shades should be avoided because they clash with cool undertones, often making the skin look flushed or uneven.",
+    "Jewelry & why: Silver, platinum, and white gold suit best as cool metals reinforce the skin’s undertone without adding unwanted warmth.",
+    "Fabric & finish guidance & why: Smooth, crisp fabrics such as satin, fine knits, or lightweight wool enhance cool skin by keeping the overall look clean and refined rather than heavy.",
+    "Overall styling logic: Light cool skin thrives on clarity — clean, cool colors sharpen features instead of overpowering them."
+  ],
 
-      <div className="flex-grow max-w-6xl w-full mx-auto py-10 px-8">
-        <h1 className="text-3xl sm:text-4xl font-bold mb-8 text-purple-900 text-center drop-shadow-sm">
-          Skin Tone Analysis
-        </h1>
+  "Light Neutral": [
+    "What suits & why: Soft neutrals like blush, taupe, dusty lavender, muted peach, and creamy beige work because they respect the skin’s balanced undertones without pulling too warm or too cool.",
+    "What to avoid & why: Neon colors or very dark, high-contrast shades should be avoided as they overpower the subtle balance of neutral skin and disrupt its natural harmony.",
+    "Jewelry & why: Both gold and silver work, but rose gold is especially flattering because it sits perfectly between warm and cool, mirroring the skin’s neutrality.",
+    "Fabric & finish guidance & why: Balanced textures like soft linen, silk, or light wool blends work best, avoiding extremes like overly glossy or very rough finishes.",
+    "Overall styling logic: Light neutral skin is about moderation — balanced tones enhance elegance, extremes create imbalance."
+  ],
 
-        {/* Instruction Container */}
-        <div className="max-w-xl mx-auto bg-amber-50 border border-amber-200 text-amber-800 text-center p-2 rounded-md mb-6">
-          <p className="text-sm">
-            Upload a clear picture of your face in natural lighting, without makeup or any other accessories for best results.
+  "Dusky Warm": [
+    "What suits & why: Earthy and warm tones like burnt orange, copper, mustard, olive, teal, and warm greens suit this skin because they amplify the golden and olive undertones, adding richness and depth.",
+    "What to avoid & why: Icy pastels, cool greys, and pale lavenders should be avoided as they dull the warmth and make the complexion appear flat or ashy.",
+    "Jewelry & why: Gold jewelry enhances warmth by reflecting yellow light onto the skin, intensifying natural radiance and depth.",
+    "Fabric & finish guidance & why: Rich fabrics with depth like silk, satin, velvet, or subtle sheen materials elevate dusky warm skin by adding dimension.",
+    "Overall styling logic: Dusky warm skin shines when warmth and depth are emphasized — autumnal palettes feel naturally harmonious."
+  ],
+
+  "Dusky Cool": [
+    "What suits & why: Jewel tones such as emerald, plum, ruby, sapphire, berry, and deep navy complement the cool undertones, enhancing richness without overwhelming the skin.",
+    "What to avoid & why: Warm yellows, pumpkin orange, mustard, and golden browns should be avoided as they overpower the cool base and create imbalance.",
+    "Jewelry & why: Silver, platinum, and white gold work best because they align with the skin’s cool undertones and add refinement.",
+    "Fabric & finish guidance & why: Structured fabrics and smooth finishes like satin, crepe, or fine wool enhance the skin’s sophistication.",
+    "Overall styling logic: Dusky cool skin benefits from richness without warmth — cool depth creates elegance."
+  ],
+
+  "Dusky Neutral": [
+    "What suits & why: Muted jewel tones like burgundy, deep teal, olive, charcoal, and coffee brown work because they respect both warm and cool undertones equally.",
+    "What to avoid & why: Extremely icy pastels or overly warm neon shades disrupt the balance and can make the skin appear mismatched.",
+    "Jewelry & why: Both silver and gold work well; mixed metals look especially harmonious as they reflect the skin’s balanced nature.",
+    "Fabric & finish guidance & why: Medium-weight fabrics with subtle texture enhance versatility without overpowering the skin.",
+    "Overall styling logic: Dusky neutral skin thrives on balance — richness paired with restraint creates polish."
+  ],
+
+  "Dark Warm": [
+    "What suits & why: Saturated warm tones like emerald, mustard, burnt orange, ruby red, forest green, and terracotta enhance golden undertones and highlight depth.",
+    "What to avoid & why: Pale pastels and overly cool shades lack contrast and fail to capture the richness of dark warm skin.",
+    "Jewelry & why: Gold and bronze metals amplify warmth and glow, making features appear more luminous.",
+    "Fabric & finish guidance & why: Luxurious fabrics like velvet, brocade, silk, and textured weaves elevate the skin’s natural vibrance.",
+    "Overall styling logic: Dark warm skin excels with intensity — richness and warmth bring out its power."
+  ],
+
+  "Dark Cool": [
+    "What suits & why: Royal blue, plum, magenta, fuchsia, amethyst, and jewel-inspired shades enhance cool undertones while maintaining bold contrast.",
+    "What to avoid & why: Golden yellows, orange-based browns, and mustard clash strongly with the cool base, creating harsh imbalance.",
+    "Jewelry & why: Silver, platinum, and white gold enhance cool undertones and maintain elegance.",
+    "Fabric & finish guidance & why: Sleek, polished fabrics with structure emphasize contrast and sophistication.",
+    "Overall styling logic: Dark cool skin thrives on contrast — cool intensity highlights its regal quality."
+  ],
+
+  "Dark Neutral": [
+    "What suits & why: Deep neutrals like espresso, mocha, burgundy, olive, and jewel tones like teal and sapphire suit because they balance warmth and coolness.",
+    "What to avoid & why: Extremely warm oranges or icy blues push the skin too far in one direction and disrupt harmony.",
+    "Jewelry & why: Both gold and silver work equally well, allowing flexibility in styling.",
+    "Fabric & finish guidance & why: Rich fabrics with controlled shine or texture enhance depth without overwhelming the skin.",
+    "Overall styling logic: Dark neutral skin is most powerful when balance meets richness — controlled contrast is key."
+  ]
+};
+
+return (
+  <main className="flex flex-col min-h-screen bg-gradient-to-b from-purple-50 to-white">
+    {/* Header */}
+    <header className="w-full bg-gradient-to-r from-purple-700 to-purple-900 py-5 shadow-md">
+      <h1 className="text-sm sm:text-base font-medium text-white text-center px-4">
+        Discover your natural tones through AI-powered skin analysis
+      </h1>
+    </header>
+
+    {/* Main Container */}
+    <div className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-10 py-10">
+      <h1 className="text-3xl sm:text-4xl font-extrabold text-purple-900 text-center mb-10">
+        Skin Tone Analysis
+      </h1>
+
+      {/* Instruction Card */}
+      <div className="max-w-xl mx-auto mb-8">
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center shadow-sm">
+          <p className="text-sm text-amber-800 leading-relaxed">
+            Upload a clear, front-facing photo in natural lighting. Avoid makeup,
+            filters, or accessories for the most accurate analysis.
           </p>
         </div>
+      </div>
 
-        {/* Upload Input */}
+      {/* Upload Card */}
+      <div className="max-w-xl mx-auto bg-white rounded-2xl shadow-lg border p-6 mb-10">
         <input
           type="file"
           accept="image/*"
           onChange={handleImageChange}
-          className="mb-8  block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
-                     file:rounded-md file:border-0 file:text-sm file:font-semibold
-                     file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 "
+          className="block w-full text-sm text-gray-500
+            file:mr-4 file:py-2.5 file:px-5
+            file:rounded-lg file:border-0
+            file:font-semibold
+            file:bg-purple-100 file:text-purple-700
+            hover:file:bg-purple-200 transition"
         />
+      </div>
 
-        {/* Preview */}
-        {previewUrl && (
-          <div className="mb-10 p-4 bg-gray-300 rounded-xl shadow-md border border-gray-200 max-w-2xl mx-auto">
+      {/* Image Preview */}
+      {previewUrl && (
+        <div className="max-w-3xl mx-auto mb-12">
+          <div className="bg-white rounded-2xl shadow-xl border p-6">
             <img
               src={previewUrl}
               alt="Preview"
-              className="rounded-lg  w-full max-h-96 object-contain mx-auto"
+              className="rounded-xl w-full max-h-[420px] object-contain mx-auto"
             />
             <p className="text-center text-sm text-gray-500 mt-3">
-              Preview
+              Image Preview
             </p>
           </div>
-        )}
-
-        {/* Analyze Button */}
-        <div className="flex justify-center mb-10">
-          <button
-            onClick={handleAnalyze}
-            className={`flex items-center gap-2 px-5 py-1 rounded-lg font-semibold text-lg transition duration-300
-              ${loading
-                ? 'bg-purple-500 text-white'
-                : 'bg-purple-600 hover:bg-purple-700 text-white'}`}
-          >
-            {loading && <Loader2 className="animate-spin h-5 w-5" />}
-            {loading ? 'Analyzing...' : 'Analyze Image'}
-          </button>
         </div>
+      )}
 
-        {/* Results Section */}
-        {result && (
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Card 1: Color Analysis */}
-            <div className="flex-1 bg-white rounded-2xl shadow-xl p-8 border">
-              <h2 className="text-2xl font-bold text-purple-800 mb-4">Color Analysis</h2>
+      {/* Analyze Button */}
+      <div className="flex justify-center mb-14">
+        <button
+          onClick={handleAnalyze}
+          className={`flex items-center gap-3 px-7 py-3 rounded-xl font-semibold text-base shadow-lg transition-all
+            ${loading
+              ? "bg-purple-500 text-white"
+              : "bg-purple-700 hover:bg-purple-800 text-white hover:scale-105"}`}
+        >
+          {loading && <Loader2 className="animate-spin h-5 w-5" />}
+          {loading ? "Analyzing your tones..." : "Analyze Image"}
+        </button>
+      </div>
 
-              {/* Overall Skin Tone */}
-              <div className="bg-purple-100 rounded-xl p-6 mb-6 text-center shadow-md">
-                <h3 className="text-xl font-semibold text-purple-800 mb-2">Overall Skin Tone</h3>
-                <p className="text-gray-700 mb-4">
-                  Your detected skin type is{" "}
-                  <span className="font-semibold">{result.skin_subtype}</span>.
-                </p>
+      {/* Results */}
+      {result && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+          {/* LEFT CARD — SKIN ANALYSIS */}
+          <div className="bg-white rounded-3xl shadow-xl border p-8">
+            <h2 className="text-2xl font-bold text-purple-800 mb-6">
+              Your Skin Analysis
+            </h2>
+
+            {/* Main Tone */}
+            <div className="bg-purple-50 rounded-2xl p-6 mb-8 text-center">
+              <h3 className="text-lg font-semibold text-purple-800 mb-1">
+                Detected Skin Subtype
+              </h3>
+              <p className="text-gray-700 mb-4">
+                <span className="font-semibold">{result.skin_subtype}</span>
+              </p>
+
+              <div
+                className="w-28 h-28 mx-auto rounded-full border-4 border-purple-300 mb-3"
+                style={{ backgroundColor: result.avg_total_hex }}
+              />
+
+              <p className="text-sm text-gray-600">
+                HEX: {result.avg_total_hex}
+              </p>
+              <p className="text-sm text-gray-600">
+                RGB: {JSON.stringify(result.avg_total_rgb)}
+              </p>
+            </div>
+
+            {/* Insights */}
+            <div className="bg-gray-50 rounded-2xl p-6 shadow-inner">
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                Why this matters
+              </h3>
+              <p className="text-gray-600 leading-relaxed text-sm space-y-2">
+                {subtypeDescriptions[result.skin_subtype] ||
+                  subtypeDescriptions["Unknown"]}
+              </p>
+            </div>
+
+            {/* Light / Dark */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8">
+              {[{
+                label: "Light Areas",
+                hex: result.avg_light_hex,
+                rgb: result.avg_light_rgb,
+                desc: "Naturally brighter regions reflecting highlights."
+              },
+              {
+                label: "Dark Areas",
+                hex: result.avg_dark_hex,
+                rgb: result.avg_dark_rgb,
+                desc: "Shadows and deeper facial contours."
+              }].map((item, idx) => (
                 <div
-                  className="w-28 h-28 mx-auto rounded-full border-2 border-purple-300 mb-3"
-                  style={{ backgroundColor: result.avg_total_hex }}
-                />
-                <p className="text-lg font-semibold text-purple-800">
-                  {result.skin_tone.toUpperCase()}
-                </p>
-                <p className="text-sm text-gray-600 mt-1">HEX: {result.avg_total_hex}</p>
-                <p className="text-sm text-gray-600">RGB: {JSON.stringify(result.avg_total_rgb)}</p>
-              </div>
-
-              {/* Skin Tone Insights */}
-              <div className="bg-gray-50 rounded-xl p-6 shadow-inner">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">Skin Tone Insights</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  {subtypeDescriptions[result.skin_subtype] || subtypeDescriptions["Unknown"]}
-                </p>
-              </div>
-
-              {/* Average Light/Dark Tones */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
-                <div className="flex flex-col items-center bg-gray-50 p-6 rounded-lg shadow-md ">
+                  key={idx}
+                  className="bg-white rounded-xl shadow-md p-5 text-center border"
+                >
                   <div
-                    className="w-20 h-20 rounded-full border border-gray-300 mb-3"
-                    style={{ backgroundColor: result.avg_light_hex }}
+                    className="w-20 h-20 rounded-full mx-auto mb-3 border"
+                    style={{ backgroundColor: item.hex }}
                   />
-                  <p className="text-sm text-gray-700 font-medium">Light Areas</p>
-                  <p className="text-xs text-center text-gray-700 mb-2">
-                    Highlights and naturally lighter regions of your face.
+                  <p className="font-medium text-gray-700">{item.label}</p>
+                  <p className="text-xs text-gray-500 mb-2">{item.desc}</p>
+                  <p className="text-xs text-gray-500">HEX: {item.hex}</p>
+                  <p className="text-xs text-gray-500">
+                    RGB: {JSON.stringify(item.rgb)}
                   </p>
-                  <p className="text-xs text-gray-500">HEX: {result.avg_light_hex}</p>
-                  <p className="text-xs text-gray-500">RGB: {JSON.stringify(result.avg_light_rgb)}</p>
                 </div>
+              ))}
+            </div>
+          </div>
 
-                <div className="flex flex-col items-center bg-gray-50 p-6 rounded-lg shadow-md ">
-                  <div
-                    className="w-20 h-20 rounded-full border border-gray-300 mb-3"
-                    style={{ backgroundColor: result.avg_dark_hex }}
-                  />
-                  <p className="text-sm text-gray-700 font-medium">Dark Areas</p>
-                  <p className="text-xs text-center text-gray-700 mb-2">
-                    Shadows and naturally darker contours of your face.
-                  </p>
-                  <p className="text-xs text-gray-500">HEX: {result.avg_dark_hex}</p>
-                  <p className="text-xs text-gray-500">RGB: {JSON.stringify(result.avg_dark_rgb)}</p>
-                </div>
+          {/* RIGHT CARD — CLOTHING */}
+          <div className="bg-white rounded-3xl shadow-xl border p-8">
+            <h2 className="text-2xl font-bold text-purple-800 mb-6">
+              Clothing Color Guidance
+            </h2>
+
+            {/* Recommended */}
+            <div className="mb-10">
+              <h3 className="text-lg font-semibold text-gray-700 mb-4">
+                Colors That Enhance Your Skin
+              </h3>
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-5">
+                {result.recommended_colors.map((colorObj, idx) => (
+                  <div key={idx} className="text-center">
+                    <div
+                      className="w-14 h-14 rounded-full mx-auto border-2 border-gray-300 mb-2 hover:scale-110 transition"
+                      style={{ backgroundColor: colorObj.hex }}
+                      title={colorObj.name}
+                    />
+                    <p className="text-xs font-medium text-gray-700">
+                      {colorObj.name}
+                    </p>
+                    {colorObj.reason && (
+                      <p className="text-[11px] text-gray-500 mt-1">
+                        {colorObj.reason}
+                      </p>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
 
-            {/* Card 2: Clothing Recommendations */}
-            <div className="flex-1 bg-white rounded-2xl shadow-xl p-8 border">
-              <h2 className="text-2xl font-bold text-purple-800 mb-4">Clothing Recommendations</h2>
-
-              {/* Colors To Go For */}
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-700 mb-3">Colors to Go For</h3>
-                <div className="grid grid-cols-5 gap-4">
-                  {result.recommended_colors.map((colorObj, idx) => (
-                    <div key={idx} className="text-center">
-                      <div
-                        className="w-12 h-12 rounded-full border-2 border-gray-300 mb-1 mx-auto cursor-pointer hover:scale-110 transition-transform"
-                        style={{ backgroundColor: colorObj.hex }}
-                        title={colorObj.name}
-                      />
-                      <p className="text-xxs text-gray-600">{colorObj.name}</p>
-                      {colorObj.reason && (
-                        <p className="text-xs text-gray-400">{colorObj.reason}</p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Colors to Avoid */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-700 mb-3">Colors to Avoid</h3>
-                <div className="grid grid-cols-5 gap-4">
-                  {result.avoid_colors.map((colorObj, idx) => (
-                    <div key={idx} className="text-center">
-                      <div
-                        className="w-12 h-12 rounded-full border-2 border-gray-300 mb-1 mx-auto cursor-pointer hover:scale-110 transition-transform"
-                        style={{ backgroundColor: colorObj.hex }}
-                        title={colorObj.name}
-                      />
-                      <p className="text-xxs text-gray-600">{colorObj.name}</p>
-                      {colorObj.reason && (
-                        <p className="text-xs text-gray-400">{colorObj.reason}</p>
-                      )}
-                    </div>
-                  ))}
-                </div>
+            {/* Avoid */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-700 mb-4">
+                Colors That May Dull Your Skin
+              </h3>
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-5">
+                {result.avoid_colors.map((colorObj, idx) => (
+                  <div key={idx} className="text-center">
+                    <div
+                      className="w-14 h-14 rounded-full mx-auto border-2 border-gray-300 mb-2 hover:scale-110 transition"
+                      style={{ backgroundColor: colorObj.hex }}
+                      title={colorObj.name}
+                    />
+                    <p className="text-xs font-medium text-gray-700">
+                      {colorObj.name}
+                    </p>
+                    {colorObj.reason && (
+                      <p className="text-[11px] text-gray-500 mt-1">
+                        {colorObj.reason}
+                      </p>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
+    </div>
+
+    {/* Footer */}
+    <footer className="mt-14 px-6 pb-6 text-center text-sm text-gray-500">
+      <div className="max-w-md mx-auto border-t border-gray-300 mb-4" />
+      <div className="flex justify-center gap-10 mb-2">
+        <a
+          href="https://www.linkedin.com/in/varshaveliyath"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-purple-600 hover:text-purple-800"
+        >
+          <Linkedin className="h-5 w-5" />
+        </a>
+        <a
+          href="mailto:veliyathvarsha@gmail.com"
+          className="text-purple-600 hover:text-purple-800"
+        >
+          <Mail className="h-5 w-5" />
+        </a>
       </div>
-      
-
-
-      {/* Footer */}
-      <footer className="mt-10 px-6 pb-2 text-center text-sm text-gray-500 pt-4 space-y-3">
-        <div className="w-3/4 mx-auto border-t border-gray-400 mb-2"></div>
-
-        <p className="flex justify-center gap-8 mb-1">
-          <a
-            href="https://www.linkedin.com/in/varshaveliyath"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 text-purple-500 hover:underline"
-          >
-            <Linkedin className="h-5 w-5" /> 
-          </a>
-          <a
-            href="mailto:veliyathvarsha@gmail.com"
-            className="flex items-center gap-1 text-purple-500 hover:underline"
-          >
-            <Mail className="h-5 w-5" /> 
-          </a>
-        </p>
-        <p>© {new Date().getFullYear()} All Rights Reserved.</p>
-      </footer>
-    </main>
-  );
+      <p>© {new Date().getFullYear()} All Rights Reserved.</p>
+    </footer>
+  </main>
+);
 }

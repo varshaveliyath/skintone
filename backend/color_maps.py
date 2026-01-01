@@ -1,182 +1,193 @@
-
-    # -------------------------
-    # Color recommendation maps
-    # -------------------------
-
 recommended_color_map = {
-        "Light Warm": [
-            {"name": "Peach", "hex": "#FFDAB9", "reason": "Enhances warm glow"},
-            {"name": "Coral", "hex": "#FF7F50", "reason": "Adds vibrance"},
-            {"name": "Yellow", "hex": "#FFD700", "reason": "Matches undertone"},
-            {"name": "Beige", "hex": "#F5F5DC", "reason": "Soft neutral"},
-            {"name": "Light Brown", "hex": "#C4A484", "reason": "Balances warmth"},
-            {"name": "Soft Pink", "hex": "#FFB6C1", "reason": "Adds freshness"},
-            {"name": "Olive", "hex": "#808000", "reason": "Earthy balance"},
-            {"name": "Amber", "hex": "#FFBF00", "reason": "Boosts warm undertone"},
-            {"name": "Ivory", "hex": "#FFFFF0", "reason": "Brightens skin"},
-            {"name": "Salmon", "hex": "#FA8072", "reason": "Complements tone"}
-        ],
-        "Light Cool": [
-            {"name": "Sky Blue", "hex": "#87CEEB", "reason": "Brightens undertone"},
-            {"name": "Lavender", "hex": "#E6E6FA", "reason": "Softens look"},
-            {"name": "Mint", "hex": "#98FF98", "reason": "Fresh contrast"},
-            {"name": "Silver", "hex": "#C0C0C0", "reason": "Cool metallic"},
-            {"name": "Lilac", "hex": "#D8BFD8", "reason": "Gentle contrast"},
-            {"name": "Turquoise", "hex": "#40E0D0", "reason": "Fresh vibrance"},
-            {"name": "Ice Blue", "hex": "#AFEEEE", "reason": "Enhances radiance"},
-            {"name": "Soft Gray", "hex": "#D3D3D3", "reason": "Neutral base"},
-            {"name": "Rose Pink", "hex": "#FFC0CB", "reason": "Adds softness"},
-            {"name": "Aqua", "hex": "#00FFFF", "reason": "Bright pop"}
-        ],
-        "Light Neutral": [
-            {"name": "Beige", "hex": "#F5F5DC", "reason": "Neutral match"},
-            {"name": "Cream", "hex": "#FFFDD0", "reason": "Soft brightness"},
-            {"name": "White", "hex": "#FFFFFF", "reason": "Classic neutral"},
-            {"name": "Sand", "hex": "#C2B280", "reason": "Natural earthy tone"},
-            {"name": "Soft Pink", "hex": "#FFD1DC", "reason": "Gentle contrast"},
-            {"name": "Gray", "hex": "#D3D3D3", "reason": "Balances tone"},
-            {"name": "Champagne", "hex": "#F7E7CE", "reason": "Elegant glow"},
-            {"name": "Taupe", "hex": "#B38B6D", "reason": "Neutral earthy shade"},
-            {"name": "Pale Peach", "hex": "#FFE5B4", "reason": "Adds warmth"},
-            {"name": "Ivory", "hex": "#FFFFF0", "reason": "Clean, soft look"}
-        ],
-        "Dusky Warm": [
-            {"name": "Orange", "hex": "#FFA500", "reason": "Highlights warmth"},
-            {"name": "Mustard", "hex": "#FFDB58", "reason": "Bold and vibrant"},
-            {"name": "Olive Green", "hex": "#808000", "reason": "Earthy complement"},
-            {"name": "Coral", "hex": "#FF7F50", "reason": "Adds freshness"},
-            {"name": "Brown", "hex": "#8B4513", "reason": "Balances undertone"},
-            {"name": "Golden Yellow", "hex": "#FFD700", "reason": "Accentuates warmth"},
-            {"name": "Rust", "hex": "#B7410E", "reason": "Earthy richness"},
-            {"name": "Peach", "hex": "#FFDAB9", "reason": "Softens tone"},
-            {"name": "Camel", "hex": "#C19A6B", "reason": "Neutral earthy look"},
-            {"name": "Warm Beige", "hex": "#F5F5DC", "reason": "Complements tone"}
-        ],
-        "Dusky Cool": [
-            {"name": "Navy Blue", "hex": "#000080", "reason": "Strong contrast"},
-            {"name": "Burgundy", "hex": "#800020", "reason": "Adds richness"},
-            {"name": "Emerald Green", "hex": "#50C878", "reason": "Bright balance"},
-            {"name": "Purple", "hex": "#800080", "reason": "Enhances undertone"},
-            {"name": "Teal", "hex": "#008080", "reason": "Balances coolness"},
-            {"name": "Gray", "hex": "#808080", "reason": "Neutral grounding"},
-            {"name": "Magenta", "hex": "#FF00FF", "reason": "Adds pop"},
-            {"name": "Blue", "hex": "#0000FF", "reason": "Sharp, clean contrast"},
-            {"name": "Lavender", "hex": "#E6E6FA", "reason": "Soft balance"},
-            {"name": "Rose", "hex": "#FF007F", "reason": "Brightens complexion"}
-        ],
-        "Dusky Neutral": [
-            {"name": "Teal", "hex": "#008080", "reason": "Balances undertone"},
-            {"name": "Olive", "hex": "#808000", "reason": "Earthy complement"},
-            {"name": "Coral", "hex": "#FF7F50", "reason": "Adds vibrance"},
-            {"name": "Navy", "hex": "#000080", "reason": "Strong contrast"},
-            {"name": "Beige", "hex": "#F5F5DC", "reason": "Neutral grounding"},
-            {"name": "Rose Pink", "hex": "#FFC0CB", "reason": "Soft pop"},
-            {"name": "Gray", "hex": "#D3D3D3", "reason": "Balances tone"},
-            {"name": "Brown", "hex": "#8B4513", "reason": "Adds richness"},
-            {"name": "Soft Blue", "hex": "#87CEEB", "reason": "Light, fresh"},
-            {"name": "Camel", "hex": "#C19A6B", "reason": "Earthy balance"}
-        ],
-        "Dark Warm": [
-            {"name": "Gold", "hex": "#FFD700", "reason": "Enhances richness"},
-            {"name": "Orange", "hex": "#FFA500", "reason": "Bright, bold contrast"},
-            {"name": "Yellow", "hex": "#FFFF00", "reason": "Accentuates warmth"},
-            {"name": "Olive Green", "hex": "#808000", "reason": "Earthy balance"},
-            {"name": "Copper", "hex": "#B87333", "reason": "Adds richness"},
-            {"name": "Maroon", "hex": "#800000", "reason": "Deep, bold look"},
-            {"name": "Rust", "hex": "#B7410E", "reason": "Earthy warmth"},
-            {"name": "Camel", "hex": "#C19A6B", "reason": "Soft contrast"},
-            {"name": "Coral", "hex": "#FF7F50", "reason": "Bright freshness"},
-            {"name": "Amber", "hex": "#FFBF00", "reason": "Glowing richness"}
-        ],
-        "Dark Cool": [
-            {"name": "Emerald", "hex": "#50C878", "reason": "Vivid balance"},
-            {"name": "Navy", "hex": "#000080", "reason": "Strong contrast"},
-            {"name": "Burgundy", "hex": "#800020", "reason": "Adds richness"},
-            {"name": "Plum", "hex": "#8E4585", "reason": "Enhances coolness"},
-            {"name": "Teal", "hex": "#008080", "reason": "Cool grounding"},
-            {"name": "Blue", "hex": "#0000FF", "reason": "Bright pop"},
-            {"name": "Lavender", "hex": "#E6E6FA", "reason": "Soft contrast"},
-            {"name": "Rose", "hex": "#FF007F", "reason": "Adds brightness"},
-            {"name": "Silver", "hex": "#C0C0C0", "reason": "Neutral highlight"},
-            {"name": "Gray", "hex": "#808080", "reason": "Balances skin"}
-        ],
-        "Dark Neutral": [
-            {"name": "Brown", "hex": "#8B4513", "reason": "Rich neutral match"},
-            {"name": "Olive", "hex": "#808000", "reason": "Earthy balance"},
-            {"name": "Beige", "hex": "#F5F5DC", "reason": "Neutral grounding"},
-            {"name": "Camel", "hex": "#C19A6B", "reason": "Soft, earthy"},
-            {"name": "Burgundy", "hex": "#800020", "reason": "Adds richness"},
-            {"name": "Teal", "hex": "#008080", "reason": "Balances undertone"},
-            {"name": "Navy", "hex": "#000080", "reason": "Bold contrast"},
-            {"name": "Coral", "hex": "#FF7F50", "reason": "Adds pop"},
-            {"name": "Gold", "hex": "#FFD700", "reason": "Enhances glow"},
-            {"name": "Gray", "hex": "#A9A9A9", "reason": "Neutral highlight"}
-        ]
-    }
 
-avoid_color_map = {
-            "Light Warm": [
-        {"name": "Neon Green", "hex": "#39FF14", "reason": "Too harsh"},
-        {"name": "Black", "hex": "#000000", "reason": "Overpowers skin"},
-        {"name": "Bright White", "hex": "#FFFFFF", "reason": "Too stark"},
-        {"name": "Cool Gray", "hex": "#A9A9A9", "reason": "Washes out skin"},
-        {"name": "Purple", "hex": "#800080", "reason": "Clashes with warmth"}
+    "Light Warm": [
+        {"name": "Warm Ivory", "hex": "#FFF4E6", "reason": "Brightens without washing out"},
+        {"name": "Soft Apricot", "hex": "#F6B092", "reason": "Echoes peach undertones"},
+        {"name": "Butter Yellow", "hex": "#F3E5AB", "reason": "Adds warmth without harsh contrast"},
+        {"name": "Warm Sage", "hex": "#A3B18A", "reason": "Balances warmth naturally"},
+        {"name": "Camel Beige", "hex": "#D2B48C", "reason": "Grounded neutral for light warmth"},
+        {"name": "Soft Coral", "hex": "#F88379", "reason": "Enhances healthy glow"},
+        {"name": "Warm Taupe", "hex": "#B8A99A", "reason": "Neutral without dulling"},
+        {"name": "Light Terracotta", "hex": "#E8A598", "reason": "Subtle earthy warmth"},
+        {"name": "Champagne Gold", "hex": "#F7E7CE", "reason": "Refined warm metallic"},
+        {"name": "Muted Peach Pink", "hex": "#F4C2C2", "reason": "Soft color harmony"}
     ],
+
     "Light Cool": [
-        {"name": "Orange", "hex": "#FFA500", "reason": "Too warm"},
-        {"name": "Mustard", "hex": "#FFDB58", "reason": "Overpowers cool skin"},
-        {"name": "Golden Yellow", "hex": "#FFD700", "reason": "Too warm"},
-        {"name": "Coral", "hex": "#FF7F50", "reason": "Too bright"},
-        {"name": "Beige", "hex": "#F5F5DC", "reason": "Looks dull"}
+        {"name": "Soft Pearl White", "hex": "#F5F7FA", "reason": "Brightens cool undertones"},
+        {"name": "Powder Blue", "hex": "#B6D0E2", "reason": "Enhances clarity"},
+        {"name": "Lavender Mist", "hex": "#DCD0FF", "reason": "Soft cool elegance"},
+        {"name": "Dusty Rose", "hex": "#D8A7B1", "reason": "Pink without warmth"},
+        {"name": "Cool Mint", "hex": "#B8E0D2", "reason": "Fresh but gentle"},
+        {"name": "Periwinkle", "hex": "#CCCCFF", "reason": "Balances cool brightness"},
+        {"name": "Icy Gray", "hex": "#DDE1E4", "reason": "Neutral without dulling"},
+        {"name": "Soft Berry", "hex": "#C38EB4", "reason": "Adds contrast without harshness"},
+        {"name": "Silver Blue", "hex": "#C4D7E0", "reason": "Metallic-friendly cool tone"},
+        {"name": "Muted Lilac", "hex": "#CAB8E2", "reason": "Natural undertone harmony"}
     ],
-    "Light Neutral": [
-        {"name": "Neon Pink", "hex": "#FF6EC7", "reason": "Too bold"},
-        {"name": "Lime Green", "hex": "#32CD32", "reason": "Overwhelms skin"},
-        {"name": "Bright Red", "hex": "#FF0000", "reason": "Too harsh"},
-        {"name": "Black", "hex": "#000000", "reason": "Strong contrast"},
-        {"name": "Violet", "hex": "#8F00FF", "reason": "Too bold"}
-    ],
-    "Dusky Warm": [
-        {"name": "Neon Yellow", "hex": "#FFFF33", "reason": "Overly bright"},
-        {"name": "Pink", "hex": "#FF69B4", "reason": "Too soft"},
-        {"name": "Cool Blue", "hex": "#1E90FF", "reason": "Too sharp"},
-        {"name": "Purple", "hex": "#800080", "reason": "Clashes with warmth"},
-        {"name": "Silver", "hex": "#C0C0C0", "reason": "Too cold"}
-    ],
-    "Dusky Cool": [
-        {"name": "Orange", "hex": "#FFA500", "reason": "Too warm"},
-        {"name": "Yellow", "hex": "#FFFF00", "reason": "Overpowers coolness"},
-        {"name": "Beige", "hex": "#F5F5DC", "reason": "Looks flat"},
-        {"name": "Brown", "hex": "#8B4513", "reason": "Too heavy"},
-        {"name": "Gold", "hex": "#FFD700", "reason": "Too warm"}
-    ],
-    "Dusky Neutral": [
-        {"name": "Neon Pink", "hex": "#FF69B4", "reason": "Too loud"},
-        {"name": "Lime Green", "hex": "#32CD32", "reason": "Too sharp"},
-        {"name": "Neon Yellow", "hex": "#FFFF33", "reason": "Overpowers balance"},
-        {"name": "Bright Orange", "hex": "#FF4500", "reason": "Too strong"},
-        {"name": "Silver Gray", "hex": "#C0C0C0", "reason": "Flattens tone"}
-    ],
-    "Dark Warm": [
-        {"name": "Neon Blue", "hex": "#1F51FF", "reason": "Too artificial"},
-        {"name": "Cool Pink", "hex": "#FFB6C1", "reason": "Clashes with warmth"},
-        {"name": "Silver", "hex": "#C0C0C0", "reason": "Looks dull"},
-        {"name": "Lavender", "hex": "#E6E6FA", "reason": "Too cool"},
-        {"name": "Gray", "hex": "#808080", "reason": "Flattens complexion"}
-    ],
-    "Dark Cool": [
-        {"name": "Mustard", "hex": "#FFDB58", "reason": "Too warm"},
-        {"name": "Orange", "hex": "#FFA500", "reason": "Clashes with undertone"},
-        {"name": "Beige", "hex": "#F5F5DC", "reason": "Washes out richness"},
-        {"name": "Khaki", "hex": "#C3B091", "reason": "Looks flat"},
-        {"name": "Peach", "hex": "#FFE5B4", "reason": "Too light"}
-    ],
-    "Dark Neutral": [
-        {"name": "Neon Green", "hex": "#39FF14", "reason": "Too harsh"},
-        {"name": "Neon Orange", "hex": "#FF5F1F", "reason": "Overpowers depth"},
-        {"name": "Hot Pink", "hex": "#FF69B4", "reason": "Too flashy"},
-        {"name": "Bright Yellow", "hex": "#FFFF00", "reason": "Too strong"},
-        {"name": "Pastel Blue", "hex": "#AEC6CF", "reason": "Too weak for depth"}
-    ]
 
-    }
+    "Light Neutral": [
+        {"name": "Soft Beige", "hex": "#E6DACE", "reason": "Balanced neutral base"},
+        {"name": "Blush Nude", "hex": "#E8B4B8", "reason": "Adds warmth without imbalance"},
+        {"name": "Stone Gray", "hex": "#CFCFCF", "reason": "Controlled contrast"},
+        {"name": "Warm Ivory", "hex": "#FAF3E0", "reason": "Bright but gentle"},
+        {"name": "Mushroom Taupe", "hex": "#B7A99A", "reason": "True neutral grounding"},
+        {"name": "Soft Olive", "hex": "#B5B89A", "reason": "Bridges warm & cool"},
+        {"name": "Dusty Peach", "hex": "#F2C1AC", "reason": "Natural skin harmony"},
+        {"name": "Muted Mauve", "hex": "#C6A2B5", "reason": "Neutral pink balance"},
+        {"name": "Light Cocoa", "hex": "#C4B0A0", "reason": "Depth without heaviness"},
+        {"name": "Champagne Beige", "hex": "#EFE1C6", "reason": "Refined everyday neutral"}
+    ],
+
+    "Dusky Warm": [
+        {"name": "Burnt Coral", "hex": "#E26D5A", "reason": "Lifts warm depth"},
+        {"name": "Mustard Gold", "hex": "#D4A017", "reason": "Enhances golden undertones"},
+        {"name": "Olive Moss", "hex": "#6B8E23", "reason": "Natural earthy harmony"},
+        {"name": "Warm Teal", "hex": "#2F8F83", "reason": "Contrast without cool clash"},
+        {"name": "Rust Brown", "hex": "#B55239", "reason": "Depth with warmth"},
+        {"name": "Spiced Terracotta", "hex": "#C86B5A", "reason": "Echoes skin richness"},
+        {"name": "Golden Camel", "hex": "#C19A6B", "reason": "Reliable neutral"},
+        {"name": "Deep Peach", "hex": "#E9967A", "reason": "Softens complexion"},
+        {"name": "Warm Forest Green", "hex": "#355E3B", "reason": "Balances brightness"},
+        {"name": "Antique Gold", "hex": "#CFB53B", "reason": "Metallic harmony"}
+    ],
+
+    "Dusky Cool": [
+        {"name": "Deep Plum", "hex": "#5E2B97", "reason": "Enhances cool depth"},
+        {"name": "Blue Teal", "hex": "#006D77", "reason": "Rich cool contrast"},
+        {"name": "Berry Wine", "hex": "#722F37", "reason": "Sophisticated depth"},
+        {"name": "Cool Emerald", "hex": "#046307", "reason": "Vivid but balanced"},
+        {"name": "Steel Blue", "hex": "#4682B4", "reason": "Crisp cool tone"},
+        {"name": "Charcoal Navy", "hex": "#2E4057", "reason": "Strong neutral"},
+        {"name": "Mauve Rose", "hex": "#A2678A", "reason": "Soft cool pink"},
+        {"name": "Smoky Violet", "hex": "#7F669D", "reason": "Refined contrast"},
+        {"name": "Cool Burgundy", "hex": "#800020", "reason": "Elegant richness"},
+        {"name": "Icy Silver", "hex": "#C9CCD6", "reason": "Metallic brightness"}
+    ],
+
+    "Dusky Neutral": [
+        {"name": "Muted Teal", "hex": "#4A7C7A", "reason": "Balanced saturation"},
+        {"name": "Olive Brown", "hex": "#7A6C4F", "reason": "Earthy neutral"},
+        {"name": "Dusty Rosewood", "hex": "#8B5F65", "reason": "Soft color depth"},
+        {"name": "Slate Blue", "hex": "#6A7BA2", "reason": "Neutral cool balance"},
+        {"name": "Warm Charcoal", "hex": "#4F4F4F", "reason": "Depth without harshness"},
+        {"name": "Mocha Taupe", "hex": "#8B7D6B", "reason": "Skin-matching neutral"},
+        {"name": "Muted Copper", "hex": "#B87333", "reason": "Soft warmth"},
+        {"name": "Soft Aubergine", "hex": "#5C496E", "reason": "Balanced jewel tone"},
+        {"name": "Deep Sage", "hex": "#5E6F64", "reason": "Grounded harmony"},
+        {"name": "Antique Bronze", "hex": "#665D1E", "reason": "Neutral metallic"}
+    ],
+
+    "Dark Warm": [
+        {"name": "Deep Amber", "hex": "#C97B28", "reason": "Enhances glow"},
+        {"name": "Burnt Orange", "hex": "#CC5500", "reason": "High-impact warmth"},
+        {"name": "Golden Olive", "hex": "#556B2F", "reason": "Earthy richness"},
+        {"name": "Brick Red", "hex": "#8B2E2E", "reason": "Warm depth"},
+        {"name": "Warm Mahogany", "hex": "#4A2C2A", "reason": "Luxury neutral"},
+        {"name": "Spice Brown", "hex": "#7A3E2D", "reason": "Grounded warmth"},
+        {"name": "Rich Mustard", "hex": "#D4A017", "reason": "Radiant contrast"},
+        {"name": "Copper Glow", "hex": "#B87333", "reason": "Metallic warmth"},
+        {"name": "Forest Green", "hex": "#014421", "reason": "Deep balance"},
+        {"name": "Deep Coral", "hex": "#E2725B", "reason": "Brightens complexion"}
+    ],
+
+    "Dark Cool": [
+        {"name": "Royal Blue", "hex": "#002366", "reason": "High contrast elegance"},
+        {"name": "Cool Emerald", "hex": "#046307", "reason": "Jewel clarity"},
+        {"name": "Deep Fuchsia", "hex": "#9B1B30", "reason": "Vibrant cool pop"},
+        {"name": "Plum Wine", "hex": "#5A2A60", "reason": "Cool richness"},
+        {"name": "Blue Charcoal", "hex": "#1C1F2A", "reason": "Strong neutral"},
+        {"name": "Cool Teal", "hex": "#005F6A", "reason": "Clean contrast"},
+        {"name": "Magenta Berry", "hex": "#8B008B", "reason": "Bold undertone match"},
+        {"name": "Steel Gray", "hex": "#6E7B8B", "reason": "Modern neutral"},
+        {"name": "Icy Silver", "hex": "#C0C6D4", "reason": "Metallic brightness"},
+        {"name": "Deep Violet", "hex": "#4B0082", "reason": "Jewel depth"}
+    ],
+
+    "Dark Neutral": [
+        {"name": "Espresso Brown", "hex": "#3B2F2F", "reason": "True depth neutral"},
+        {"name": "Deep Olive", "hex": "#3D4A1E", "reason": "Earthy balance"},
+        {"name": "Teal Shadow", "hex": "#004953", "reason": "Neutral jewel tone"},
+        {"name": "Burgundy Wine", "hex": "#4A1C2A", "reason": "Rich contrast"},
+        {"name": "Warm Slate", "hex": "#4B5D67", "reason": "Balanced cool-warm"},
+        {"name": "Bronze Brown", "hex": "#5C4033", "reason": "Metallic-friendly"},
+        {"name": "Muted Gold", "hex": "#C2A14D", "reason": "Soft metallic"},
+        {"name": "Deep Taupe", "hex": "#483C32", "reason": "Everyday neutral"},
+        {"name": "Dark Forest", "hex": "#013220", "reason": "Grounded elegance"},
+        {"name": "Garnet", "hex": "#733635", "reason": "Refined color depth"}
+    ]
+}
+avoid_color_map = {
+
+    "Light Warm": [
+        {"name": "Icy Blue", "hex": "#AFDBF5", "reason": "Too cool for warm undertone"},
+        {"name": "Pure Black", "hex": "#000000", "reason": "Overpowers light contrast"},
+        {"name": "Cool Lavender", "hex": "#BFA2DB", "reason": "Clashes with warmth"},
+        {"name": "Steel Gray", "hex": "#7A7A7A", "reason": "Drains complexion"},
+        {"name": "Neon Green", "hex": "#39FF14", "reason": "Artificial contrast"}
+    ],
+
+    "Light Cool": [
+        {"name": "Mustard Yellow", "hex": "#D4A017", "reason": "Too warm"},
+        {"name": "Orange Coral", "hex": "#FF7F50", "reason": "Warm clash"},
+        {"name": "Camel Brown", "hex": "#C19A6B", "reason": "Dulls cool skin"},
+        {"name": "Warm Olive", "hex": "#808000", "reason": "Undertone mismatch"},
+        {"name": "Neon Pink", "hex": "#FF69B4", "reason": "Overpowers delicacy"}
+    ],
+
+    "Light Neutral": [
+        {"name": "Neon Yellow", "hex": "#FFFF33", "reason": "Breaks balance"},
+        {"name": "Jet Black", "hex": "#000000", "reason": "Too stark"},
+        {"name": "Electric Blue", "hex": "#1F51FF", "reason": "Over-contrasting"},
+        {"name": "Hot Magenta", "hex": "#FF00FF", "reason": "Too intense"},
+        {"name": "Acid Green", "hex": "#66FF00", "reason": "Harsh on skin"}
+    ],
+
+    "Dusky Warm": [
+        {"name": "Icy Pastel Blue", "hex": "#AEC6CF", "reason": "Cool & weak contrast"},
+        {"name": "Lavender Frost", "hex": "#E6E6FA", "reason": "Flattens warmth"},
+        {"name": "Silver Gray", "hex": "#C0C0C0", "reason": "Too cold"},
+        {"name": "Cool Magenta", "hex": "#C71585", "reason": "Undertone clash"},
+        {"name": "Neon Lime", "hex": "#32CD32", "reason": "Artificial brightness"}
+    ],
+
+    "Dusky Cool": [
+        {"name": "Burnt Orange", "hex": "#CC5500", "reason": "Too warm"},
+        {"name": "Golden Yellow", "hex": "#FFD700", "reason": "Overpowers cool depth"},
+        {"name": "Warm Beige", "hex": "#F5F5DC", "reason": "Looks flat"},
+        {"name": "Copper Brown", "hex": "#B87333", "reason": "Warm bias"},
+        {"name": "Neon Red", "hex": "#FF073A", "reason": "Harsh contrast"}
+    ],
+
+    "Dusky Neutral": [
+        {"name": "Neon Orange", "hex": "#FF5F1F", "reason": "Too aggressive"},
+        {"name": "Icy Blue", "hex": "#AFDBF5", "reason": "Weak contrast"},
+        {"name": "Acid Yellow", "hex": "#FFFF00", "reason": "Breaks balance"},
+        {"name": "Hot Pink", "hex": "#FF69B4", "reason": "Overpowers neutrality"},
+        {"name": "Silver Frost", "hex": "#DCDCDC", "reason": "Flattens depth"}
+    ],
+
+    "Dark Warm": [
+        {"name": "Cool Pastel Blue", "hex": "#B0E0E6", "reason": "Too weak"},
+        {"name": "Lavender Ice", "hex": "#E6E6FA", "reason": "Cool clash"},
+        {"name": "Steel Gray", "hex": "#808080", "reason": "Dulls richness"},
+        {"name": "Neon Cyan", "hex": "#00FFFF", "reason": "Artificial tone"},
+        {"name": "Pale Pink", "hex": "#FADADD", "reason": "Too light"}
+    ],
+
+    "Dark Cool": [
+        {"name": "Mustard Gold", "hex": "#D4A017", "reason": "Warm undertone clash"},
+        {"name": "Burnt Orange", "hex": "#CC5500", "reason": "Too warm"},
+        {"name": "Camel Beige", "hex": "#C19A6B", "reason": "Flattens depth"},
+        {"name": "Peach Nude", "hex": "#FFE5B4", "reason": "Too light"},
+        {"name": "Neon Yellow", "hex": "#FFFF33", "reason": "Harsh contrast"}
+    ],
+
+    "Dark Neutral": [
+        {"name": "Neon Green", "hex": "#39FF14", "reason": "Overpowers depth"},
+        {"name": "Neon Pink", "hex": "#FF69B4", "reason": "Too flashy"},
+        {"name": "Pale Pastel Blue", "hex": "#AEC6CF", "reason": "Too weak"},
+        {"name": "Bright Lemon", "hex": "#FFF44F", "reason": "Breaks balance"},
+        {"name": "Icy Silver", "hex": "#E5E4E2", "reason": "Flattens richness"}
+    ]
+}
