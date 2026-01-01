@@ -238,10 +238,23 @@ return (
               <h3 className="text-lg font-semibold text-gray-800 mb-3">
                 Why this matters
               </h3>
-              <p className="text-gray-600 leading-relaxed text-sm space-y-2">
-                {subtypeDescriptions[result.skin_subtype] ||
-                  subtypeDescriptions["Unknown"]}
-              </p>
+              <ol className="space-y-3 list-decimal list-inside text-gray-700">
+  {(subtypeDescriptions[result.skin_subtype] || []).map((point, index) => {
+    const [title, description] = point.split(":");
+
+    return (
+      <li key={index} className="leading-relaxed">
+        <span className="font-semibold text-gray-900">
+          {title.trim()}:
+        </span>{" "}
+        <span className="text-gray-600">
+          {description?.trim()}
+        </span>
+      </li>
+    );
+  })}
+</ol>
+
             </div>
 
             {/* Light / Dark */}
