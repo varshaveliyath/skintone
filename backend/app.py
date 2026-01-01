@@ -8,7 +8,8 @@ import logging
 
 import cv2
 import numpy as np
-import mediapipe as mp
+from mediapipe import solutions as mp_solutions
+
 
 from PIL import Image, ImageOps
 from color_maps import recommended_color_map, avoid_color_map
@@ -43,7 +44,7 @@ logger.info("✅ FastAPI app initialized")
 # =========================
 # MEDIAPIPE SETUP
 # =========================
-mp_face_mesh = mp.solutions.face_mesh
+mp_face_mesh = mp_solutions.face_mesh
 
 face_mesh = mp_face_mesh.FaceMesh(
     static_image_mode=True,
