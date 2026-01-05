@@ -3,10 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 import io
-import os
 import logging
 
-import cv2
 import numpy as np
 from mediapipe import solutions as mp_solutions
 
@@ -39,7 +37,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-logger.info("✅ FastAPI app initialized")
+logger.info("FastAPI app initialized")
 
 # =========================
 # MEDIAPIPE SETUP
@@ -53,7 +51,7 @@ face_mesh = mp_face_mesh.FaceMesh(
     min_detection_confidence=0.5
 )
 
-logger.info("✅ MediaPipe FaceMesh loaded")
+logger.info("MediaPipe FaceMesh loaded")
 
 # =========================
 # HELPERS
@@ -73,7 +71,7 @@ def compute_average_color(pixels):
 # CORE LOGIC
 # =========================
 def analyze_face_image(rgb_image: np.ndarray):
-    logger.info("🧠 Starting face analysis")
+    logger.info("Starting face analysis")
 
     h, w, _ = rgb_image.shape
 
@@ -150,7 +148,7 @@ def analyze_face_image(rgb_image: np.ndarray):
     undertone = "Warm" if r > b else "Cool" if b > r else "Neutral"
     skin_subtype = f"{skin_tone.capitalize()} {undertone}"
 
-    logger.info(f"🎨 Skin subtype detected: {skin_subtype}")
+    logger.info(f"Skin subtype detected: {skin_subtype}")
 
     return {
         "skin_tone": skin_tone,
@@ -192,5 +190,5 @@ async def analyze_image(image: UploadFile = File(...)):
         return result
 
     except Exception as e:
-        logger.exception("💥 SERVER CRASH")
+        logger.exception("SERVER CRASH")
         return JSONResponse(status_code=500, content={"error": str(e)})
