@@ -138,7 +138,7 @@ return (
 
     {/* ---------- MAIN CONTENT ---------- */}
     <div className="-mt-10 relative z-10">
-      <div className="flex-grow max-w-7xl w-full mx-auto bg-white rounded-t-3xl shadow-2xl px-4 sm:px-6 lg:px-10 py-10">
+      <div className="flex-grow max-w-7xl w-full mx-auto bg-white rounded-t-3xl shadow-xl px-4 sm:px-6 lg:px-10 py-10">
 
         {/* Instructions */}
         <div className="max-w-xl mx-auto mb-8">
@@ -392,7 +392,7 @@ return (
             {[fashionRule1, fashionRule2].map((rule, idx) => (
               <div
                 key={idx}
-                className="bg-yellow-50 rounded-3xl shadow-xl border p-8 mt-10 w-full flex flex-col lg:flex-row items-center gap-8"
+                className="bg-indigo-50 rounded-3xl shadow-xl border p-8 mt-10 w-full flex flex-col lg:flex-row items-center gap-8"
               >
                 <div className="flex-1">
                   <h2 className="text-2xl font-bold text-purple-900 mb-4">
