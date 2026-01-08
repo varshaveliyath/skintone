@@ -68,42 +68,6 @@ The goal of this app is to remove confusion in styling decisions and help users 
 - **Vercel** – Frontend deployment
 - **Render** – Backend hosting
 
-## Frontend Overview
-
-- Built using **React.js**
-- Modern, minimal UI with Tailwind CSS
-- Image upload with live preview
-- Displays:
-  - Skin analysis results
-  - Clothing recommendations
-  - Outfit pairing cards
-
-### Key Frontend Capabilities
-
-- Dynamic rendering based on detected skin subtype
-- Color swatches displayed using real HEX values
-
----
-
-## Backend Overview
-
-- Built using **Python (Flask / FastAPI)**
-- Uses **OpenCV & face detection**
-- Extracts skin pixels from safe facial regions
-- Calculates average RGB values
-- Classifies:
-  - Skin depth
-  - Undertone
-  - Final skin subtype
-
-### Backend Responsibilities
-
-- Image processing
-- Skin tone classification logic
-- JSON response with:
-  - Skin subtype
-  - Recommended colors
-
 ---
 
 ## Styling Logic Used
@@ -121,7 +85,7 @@ The goal of this app is to remove confusion in styling decisions and help users 
 - Save user profiles
 - Wardrobe upload & matching
 - Occasion-based outfit suggestions
-- AI stylist chat assistant
+- AR try ons 
 - Seasonal color palette switching
 
 ---
@@ -135,4 +99,5 @@ Fashion-Tech Developer & UI Engineer
 ---
 
 © 2026 — SkinTone Analysis App. All Rights Reserved.
+
 
