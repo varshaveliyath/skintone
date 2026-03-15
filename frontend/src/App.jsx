@@ -78,8 +78,11 @@ export default function App() {
         body: formData,
       });
 
-      if (!res.ok) throw new Error("Analysis failed");
-
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || "Analysis failed");
+      }
+      
       const data = await res.json();
       setResult(data);
       
@@ -91,7 +94,9 @@ export default function App() {
 
     } catch (err) {
       console.error("Fetch error:", err);
-      alert("Analysis failed. Please try again with a clearer photo.");
+      // Try to get error message from response if it was a valid response but not ok
+      const errorMsg = err.message || "Analysis failed. Please try again with a clearer photo.";
+      alert(errorMsg);
     } finally {
       setLoading(false);
     }
