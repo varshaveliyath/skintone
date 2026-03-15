@@ -9,7 +9,8 @@ RUN apt-get update && apt-get install -y \
     build-essential cmake \
     libopenblas-dev liblapack-dev \
     libx11-dev libgtk2.0-dev \
-    libgl1-mesa-dev libgl1-mesa-glx libglib2.0-0 \
+    libgl1-mesa-dev libgl1 libglib2.0-0 \
+    libsm6 libxext6 libxrender-dev \
     python3-dev wget unzip \
     && rm -rf /var/lib/apt/lists/*
 
