@@ -1,153 +1,30 @@
-export function generateOutfitIdeas(recommendedColors = []) {
+export async function generateOutfitIdeas(recommendedColors = [], undertone = "Neutral", userEvent = "", darkScore = 5.0, userSeason = "") {
   if (!recommendedColors.length) return [];
 
-  /* ---------- Helpers ---------- */
-  const pickRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
-  /* ---------- Safe Bottoms ---------- */
-  const safeBottoms = [
-    { name: "White Trousers", hex: "#FFFFFF" },
-    { name: "Beige Pants", hex: "#E6D5B8" },
-    { name: "Black Jeans", hex: "#000000" },
-    { name: "Blue Denim Jeans", hex: "#2F4F6F" },
-    { name: "Neutral Tailored Pants", hex: "#B0A99F" }
-  ];
+  try {
+    const res = await fetch(`${API_URL}/api/outfits`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        dark_score: darkScore,
+        undertone: undertone,
+        event: userEvent,
+        season: userSeason,
+        recommended_colors: recommendedColors
+      })
+    });
 
-  /* ---------- Event-based Rules ---------- */
-
-  const eventRules = {
-  casual: {
-    footwear: [
-      "White sneakers",
-      "Canvas sneakers",
-      "Nude flats",
-      "Ballet flats",
-      "Minimal sandals",
-      "Slide sandals",
-      "Espadrilles"
-    ],
-    layers: [
-      "Light cardigan",
-      "Denim jacket",
-      "Cotton overshirt",
-      "Soft shrug",
-      "Light hoodie",
-      "No outer layer"
-    ],
-    jewelry: [
-      "Gold minimal jewelry",
-      "Silver accents",
-      "Delicate chain necklace",
-      "Small hoop earrings",
-      "Stud earrings",
-      "Beaded bracelet"
-    ],
-    bottoms: [
-      "Blue Denim Jeans",
-      "Black Jeans",
-      "Beige Pants",
-      "Relaxed fit trousers",
-      "Casual linen pants"
-    ]
-  },
-
-  work: {
-    footwear: [
-      "Brown loafers",
-      "Black loafers",
-      "Nude flats",
-      "Pointed flats",
-      "Low block heels",
-      "Classic pumps"
-    ],
-    layers: [
-      "Structured blazer",
-      "Light cardigan",
-      "Tailored vest",
-      "Formal shrug"
-    ],
-    jewelry: [
-      "Gold minimal jewelry",
-      "Silver accents",
-      "Pearl earrings",
-      "Thin bangle",
-      "Minimal pendant necklace"
-    ],
-    bottoms: [
-      "Neutral Tailored Pants",
-      "Beige Pants",
-      "Black Jeans",
-      "Cigarette trousers",
-      "Straight fit formal pants"
-    ]
-  },
-
-  evening: {
-    footwear: [
-      "Black boots",
-      "Ankle boots",
-      "Heels",
-      "Strappy heels",
-      "Minimal sandals",
-      "Pointed toe heels"
-    ],
-    layers: [
-      "Structured blazer",
-      "Soft shrug",
-      "Silk wrap",
-      "Longline coat",
-      "No outer layer"
-    ],
-    jewelry: [
-      "Statement earrings",
-      "Pearl earrings",
-      "Bold cuff bracelet",
-      "Layered necklaces",
-      "Chandelier earrings"
-    ],
-    bottoms: [
-      "Black Jeans",
-      "White Trousers",
-      "Neutral Tailored Pants",
-      "Satin trousers",
-      "Wide-leg evening pants"
-    ]
+    if (!res.ok) throw new Error("Failed to generate ML outfits");
+    
+    const data = await res.json();
+    return data.outfits || [];
+  } catch (error) {
+    console.error("Outfit ML Error:", error);
+    // Fallback simple if server fails for outfit generation
+    return [];
   }
-};
-
-
-  /* ---------- Outfit Builder ---------- */
-  const buildOutfit = (outfitName, ruleKey) => {
-    const rules = eventRules[ruleKey];
-
-    const topColor = pickRandom(recommendedColors);
-
-    const bottom = pickRandom(
-      safeBottoms.filter((b) => rules.bottoms.includes(b.name))
-    );
-
-    return {
-      outfitName,
-
-      /* ---------- Text Only ---------- */
-      top: `${topColor.name}`,
-      bottom: bottom.name,
-      footwear: pickRandom(rules.footwear),
-      layer: pickRandom(rules.layers),
-      jewelry: pickRandom(rules.jewelry),
-
-      /* ---------- Swatches ---------- */
-      colors: [
-        topColor, 
-        bottom    
-      ]
-    };
-  };
-
-  /* ---------- Final Output ---------- */
-  return [
-    buildOutfit("Casual Everyday Look", "casual"),
-    buildOutfit("Smart Casual / Work Look", "work"),
-    buildOutfit("Evening / Elevated Look", "evening")
-  ];
 }

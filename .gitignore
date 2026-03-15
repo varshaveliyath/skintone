@@ -57,7 +57,8 @@ lerna-debug.log*
 # -----------------------------------
 *.dat
 *.h5
-*.pkl
+# *.pkl (Allowed specific models below)
+!backend/*.pkl
 *.pth
 *.pt
 
