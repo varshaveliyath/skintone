@@ -12,6 +12,8 @@ from mediapipe import solutions as mp_solutions
 from PIL import Image, ImageOps
 from color_maps import seasonal_recommended_colors, seasonal_avoid_colors
 import joblib
+import warnings
+import pandas as pd
 
 # =========================
 # LOGGING
@@ -23,22 +25,43 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # =========================
+# WARNINGS
+# =========================
+warnings.filterwarnings("ignore", category=UserWarning, module="sklearn")
+
+# =========================
 # APP
 # =========================
+from fastapi.staticfiles import StaticFiles
+import os
+
 app = FastAPI()
 
+# =========================
+# CORS SETUP
+# =========================
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Broaden for debugging deployment
-    # allow_origins=[
-    #    "https://moodwear.vercel.app",
-    #    "https://skintone.onrender.com",
-    #    "http://localhost:5173"
-    # ],
+    allow_origins=[
+        "https://moodwear.vercel.app",
+        "https://skintone.onrender.com",
+        "http://localhost:5173",
+        "http://localhost:8000"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# =========================
+# STATIC FILES (Frontend Integration)
+# =========================
+frontend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend", "dist")
+if os.path.exists(frontend_path):
+    app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
+    logger.info(f"Frontend static files mounted from {frontend_path}")
+else:
+    logger.warning(f"Frontend dist folder not found at {frontend_path}. Backend running as API only.")
 
 logger.info("FastAPI app initialized")
 
@@ -78,12 +101,25 @@ except Exception as e:
 try:
     outfit_knn_model = joblib.load("outfit_knn_model.pkl")
     outfit_knn_labels = joblib.load("outfit_knn_labels.pkl")
+    
+    # Load Male Models
+    try:
+        male_outfit_knn_model = joblib.load("male_outfit_knn_model.pkl")
+        male_outfit_knn_labels = joblib.load("male_outfit_knn_labels.pkl")
+        logger.info("Male Outfit Gen ML models loaded")
+    except Exception as me:
+        logger.warning(f"Failed to load Male Outfit models: {me}")
+        male_outfit_knn_model = None
+        male_outfit_knn_labels = None
+
     color_placement_tree = joblib.load("color_placement_tree.pkl")
     logger.info("Outfit Gen ML models loaded")
 except Exception as e:
     logger.error(f"Failed to load Outfit Gen ML models: {e}")
     outfit_knn_model = None
     outfit_knn_labels = None
+    male_outfit_knn_model = None
+    male_outfit_knn_labels = None
     color_placement_tree = None
 
 logger.info("Models loaded attempt complete.")
@@ -110,7 +146,7 @@ def compute_average_color(pixels):
 # =========================
 # CORE LOGIC
 # =========================
-def analyze_face_image(rgb_image: np.ndarray):
+def analyze_face_image(rgb_image: np.ndarray, gender: str = "female"):
     logger.info("Starting accurate model-based face analysis")
 
     h, w, _ = rgb_image.shape
@@ -138,6 +174,9 @@ def analyze_face_image(rgb_image: np.ndarray):
             "right_mid": lm(425),
             "mouth_left": lm(61),
             "mouth_right": lm(291),
+            "forehead_center": lm(10),
+            "forehead_left": lm(107),
+            "forehead_right": lm(336),
         }
     except Exception as e:
         logger.error(f"Landmark extraction failed: {e}")
@@ -146,17 +185,32 @@ def analyze_face_image(rgb_image: np.ndarray):
     # =========================
     # SAMPLE PAIRS (LOGIC PRESERVED)
     # =========================
-    pairs = [
-        ("jaw_left", "nose"),
-        ("jaw_right", "nose"),
-        ("left_cheek", "nose"),
-        ("right_cheek", "nose"),
-        ("left_mid", "jaw_center"),
-        ("right_mid", "jaw_center"),
-        ("nose", "jaw_center"),
-        ("left_cheek", "mouth_left"),
-        ("right_cheek", "mouth_right"),
-    ]
+    if gender == 'male':
+        # Skip everything connected to jaw landmarks (152, 234, 454) to avoid beard
+        pairs = [
+            ("left_cheek", "nose"),
+            ("right_cheek", "nose"),
+            ("left_mid", "nose"),
+            ("right_mid", "nose"),
+            ("forehead_center", "nose"),
+            ("forehead_left", "forehead_center"),
+            ("forehead_right", "forehead_center"),
+            ("left_cheek", "left_mid"),
+            ("right_cheek", "right_mid"),
+        ]
+        logger.info("Using male-specific landmark pairs (skipping jaw)")
+    else:
+        pairs = [
+            ("jaw_left", "nose"),
+            ("jaw_right", "nose"),
+            ("left_cheek", "nose"),
+            ("right_cheek", "nose"),
+            ("left_mid", "jaw_center"),
+            ("right_mid", "jaw_center"),
+            ("nose", "jaw_center"),
+            ("left_cheek", "mouth_left"),
+            ("right_cheek", "mouth_right"),
+        ]
 
     sample_points = []
 
@@ -197,7 +251,7 @@ def analyze_face_image(rgb_image: np.ndarray):
     
     try:
         if feature_model and feature_encoder:
-            features = np.array([[r_avg, g_avg, b_avg, brightness, dark_score]])
+            features = np.array([[r_avg, g_avg, b_avg, brightness, dark_score]], dtype=np.float32)
             prediction = feature_model.predict(features)
             skin_subtype_raw = feature_encoder.inverse_transform(prediction)[0]
             
@@ -239,7 +293,7 @@ def analyze_face_image(rgb_image: np.ndarray):
             try:
                 c_copy = c.copy()
                 cr, cg, cb = hex_to_rgb(c["hex"])
-                c_features = np.array([[r_avg, g_avg, b_avg, brightness, dark_score, cr, cg, cb]])
+                c_features = np.array([[r_avg, g_avg, b_avg, brightness, dark_score, cr, cg, cb]], dtype=np.float32)
                 pred_score = float(color_model.predict(c_features)[0])
                 c_copy["match_score"] = min(100.0, max(0.0, round(pred_score * 100, 1)))
                 scored_recommended.append(c_copy)
@@ -339,14 +393,19 @@ async def get_outfits(req: OutfitRequest):
             # Fallback will be handled inside generate_ml_outfits
             pass
             
-        outfits = generate_ml_outfits(req, outfit_knn_model, outfit_knn_labels, color_placement_tree)
+        # Choose correct model based on gender
+        is_male = req.gender.lower().strip() == 'male'
+        current_knn = male_outfit_knn_model if is_male else outfit_knn_model
+        current_labels = male_outfit_knn_labels if is_male else outfit_knn_labels
+        
+        outfits = generate_ml_outfits(req, current_knn, current_labels, color_placement_tree)
         return {"outfits": outfits}
     except Exception as e:
         logger.exception("SERVER CRASH in /api/outfits")
         return JSONResponse(status_code=500, content={"error": str(e)})
 
 @app.post("/analyze")
-async def analyze_image(image: UploadFile = File(...)):
+async def analyze_image(gender: str = "female", image: UploadFile = File(...)):
     try:
         image_bytes = await image.read()
 
@@ -356,7 +415,7 @@ async def analyze_image(image: UploadFile = File(...)):
 
         rgb_image = np.array(pil_image, dtype=np.uint8)
 
-        result, error = analyze_face_image(rgb_image)
+        result, error = analyze_face_image(rgb_image, gender=gender)
 
         if error:
             return JSONResponse(status_code=400, content={"error": error})

@@ -100,7 +100,7 @@ export function AnalysisDisplay({ result, subtypeDescriptions }) {
         <GlassCard className="flex-1 p-6 md:p-8">
           <h3 className="text-xl md:text-2xl font-black mb-6 flex items-center gap-3 text-white uppercase tracking-tight">
             <CheckCircle2 className="text-purple-500 w-5 h-5 md:w-6 md:h-6" />
-            Biological Analysis
+            Your Analysis
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             {descriptions.map((point, idx) => {

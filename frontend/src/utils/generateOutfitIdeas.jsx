@@ -1,4 +1,4 @@
-export async function generateOutfitIdeas(recommendedColors = [], undertone = "Neutral", userEvent = "", darkScore = 5.0, userSeason = "") {
+export async function generateOutfitIdeas(recommendedColors = [], undertone = "Neutral", userEvent = "", darkScore = 5.0, userSeason = "", gender = "female") {
   if (!recommendedColors.length) return [];
 
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
@@ -10,6 +10,7 @@ export async function generateOutfitIdeas(recommendedColors = [], undertone = "N
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
+        gender: gender,
         dark_score: darkScore,
         undertone: undertone,
         event: userEvent,

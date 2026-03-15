@@ -1,10 +1,10 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { Upload, Camera, Loader2, Sparkles, RefreshCw } from 'lucide-react';
+import { Upload, Camera, Loader2, Sparkles, RefreshCw, User, UserCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Webcam from 'react-webcam';
 import { GlassCard } from './GlassCard';
 
-export function ActionPanel({ onImageChange, onAnalyze, loading, previewUrl }) {
+export function ActionPanel({ onImageChange, onAnalyze, loading, previewUrl, gender, onGenderChange }) {
   const [activeTab, setActiveTab] = useState('upload');
   const webcamRef = useRef(null);
 
@@ -40,6 +40,29 @@ export function ActionPanel({ onImageChange, onAnalyze, loading, previewUrl }) {
   return (
     <div className="max-w-4xl mx-auto mb-12 relative z-30">
       <GlassCard className="p-6">
+        <div className="flex bg-white/5 p-1 rounded-xl mb-6">
+          <button
+            onClick={() => onGenderChange('female')}
+            className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all ${
+              gender === 'female' 
+              ? 'bg-purple-600/20 text-purple-400 border border-purple-500/30 shadow-[0_0_15px_rgba(168,85,247,0.2)]' 
+              : 'text-zinc-500 hover:text-zinc-300'
+            }`}
+          >
+            FEMALE BASE
+          </button>
+          <button
+            onClick={() => onGenderChange('male')}
+            className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all ${
+              gender === 'male' 
+              ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.2)]' 
+              : 'text-zinc-500 hover:text-zinc-300'
+            }`}
+          >
+            MALE BASE
+          </button>
+        </div>
+
         <div className="flex bg-white/5 p-1 rounded-xl mb-8">
           {tabs.map((tab) => (
             <button

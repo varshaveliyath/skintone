@@ -17,6 +17,7 @@ class OutfitRequest(BaseModel):
     preferred_color: str = ""
     event: str = ""
     season: str = ""
+    gender: str = "female"
     recommended_colors: List[ColorItem]
 
 STYLISH_FITS = [
@@ -53,6 +54,21 @@ STYLISH_FITS = [
     { "id": 30, "name": "Summer Basic", "top": "Ribbed Tank Top", "bottom": "Tailored Shorts", "footwear": "Flip Flops", "layer": "None" }
 ]
 
+MALE_STYLISH_FITS = [
+    { "id": 0, "name": "Modern Minimalist", "top": "Oversized Tee", "bottom": "Loose Fitted Jeans", "footwear": "Chunky Sneakers", "layer": "None" },
+    { "id": 1, "name": "Tailored Sharp", "top": "Classic Button-down", "bottom": "Chinos", "footwear": "Derby Shoes", "layer": "Unstructured Blazer" },
+    { "id": 2, "name": "Relaxed Utility", "top": "Pocket Tee", "bottom": "Cargo Pants", "footwear": "Trail Sneakers", "layer": "Over-shirt" },
+    { "id": 3, "name": "Urban Tech", "top": "Technical Hoodie", "bottom": "Nylon Joggers", "footwear": "Running Shoes", "layer": "Windbreaker" },
+    { "id": 4, "name": "Preppy Classic", "top": "Polo Shirt", "bottom": "Cotton Shorts", "footwear": "Boat Shoes", "layer": "Light Sweater" },
+    { "id": 5, "name": "Skater Edge", "top": "Boxy Tee", "bottom": "Baggy Denim", "footwear": "Canvas Low-tops", "layer": "Flannel Shirt" },
+    { "id": 6, "name": "Night Vibes", "top": "Silk Blend Shirt", "bottom": "Slim Black Trousers", "footwear": "Chelsea Boots", "layer": "Leather Jacket" },
+    { "id": 7, "name": "Quiet Luxury", "top": "Cashmere Polo", "bottom": "Linen Trousers", "footwear": "Leather Slides", "layer": "None" },
+    { "id": 8, "name": "Athleisure", "top": "Compression Tee", "bottom": "Performance Shorts", "footwear": "Trainers", "layer": "Zip Hoodie" },
+    { "id": 9, "name": "Downtown Rugged", "top": "Henley Shirt", "bottom": "Workwear Pants", "footwear": "Combat Boots", "layer": "Trucker Jacket" },
+    { "id": 10, "name": "Summer Clean", "top": "Linen Shirt", "bottom": "Drawstring Shorts", "footwear": "Espadrilles", "layer": "None" },
+    { "id": 11, "name": "Corporate Avant", "top": "Mandarin Collar Shirt", "bottom": "Pleated Trousers", "footwear": "Monk Straps", "layer": "Modern Trench" }
+]
+
 NEUTRAL_MAP = {
     "White": "#FFFFFF",
     "Black": "#0A0A0A",
@@ -63,6 +79,10 @@ NEUTRAL_MAP = {
 }
 
 def generate_ml_outfits(req: OutfitRequest, outfit_knn_model, outfit_knn_labels, color_placement_tree):
+    # Determine Fit List & Normalize Gender
+    is_male = req.gender.lower().strip() == 'male'
+    fit_list = MALE_STYLISH_FITS if is_male else STYLISH_FITS
+    
     # 1. Prepare ML Inputs
     event = req.event.lower()
     
@@ -112,8 +132,11 @@ def generate_ml_outfits(req: OutfitRequest, outfit_knn_model, outfit_knn_labels,
         np.random.shuffle(possible_archetypes)
         archetype_ids = possible_archetypes[:3]
         
+        # No re-mapping needed anymore as we use dedicated models for each gender
+        
         while len(archetype_ids) < 3:
-            archetype_ids.append(np.random.randint(0, 20))
+            max_id = len(fit_list) - 1
+            archetype_ids.append(np.random.randint(0, max_id))
             
     # 3. Decision Tree Color Placement Rule
     is_warm = 1 if "warm" in req.undertone.lower() else 0
@@ -159,7 +182,7 @@ def generate_ml_outfits(req: OutfitRequest, outfit_knn_model, outfit_knn_labels,
     for i, arch_id in enumerate(archetype_ids):
         try:
             placement_rule = rules_to_apply[i]
-            base_fit = next((f for f in STYLISH_FITS if f["id"] == arch_id), STYLISH_FITS[0])
+            base_fit = next((f for f in fit_list if f["id"] == arch_id), fit_list[0])
             
             # Pick colors
             np.random.seed() # reset seed
@@ -206,28 +229,51 @@ def generate_ml_outfits(req: OutfitRequest, outfit_knn_model, outfit_knn_labels,
             layer_text = fmt(lay_c, base_fit['layer']) if base_fit['layer'] != "None" else "None"
             
             if base_fit['bottom'] == "None":
-                # It's a dress or jumpsuit
+                # Regular female dress logic
                 bottom_text = "N/A" # Dress covers both
+                
+                # CRITICAL: Force strictly male category if somehow a dress sneaks into the male fit list
+                if is_male:
+                    # In male fits, bottom should NEVER be None, but for safety:
+                    base_fit = MALE_STYLISH_FITS[arch_id % len(MALE_STYLISH_FITS)]
+                    bottom_text = base_fit['bottom']
+                    top_text = fmt(top_c, base_fit['top'])
             
             # Determine Jewelry
             if is_warm:
-                jewelry = np.random.choice([
-                    "Gold minimal jewelry", 
-                    "Yellow gold hoop earrings", 
-                    "Bronze cuff bracelet",
-                    "Rose gold chain necklace",
-                    "Pearl drop earrings with gold accents",
-                    "Chunky gold statement ring"
-                ])
+                if is_male:
+                    jewelry = np.random.choice([
+                        "Gold signet ring",
+                        "Bronze link bracelet",
+                        "Gold classic watch",
+                        "Gold neck chain (thin)"
+                    ])
+                else:
+                    jewelry = np.random.choice([
+                        "Gold minimal jewelry", 
+                        "Yellow gold hoop earrings", 
+                        "Bronze cuff bracelet",
+                        "Rose gold chain necklace",
+                        "Pearl drop earrings with gold accents",
+                        "Chunky gold statement ring"
+                    ])
             else:
-                jewelry = np.random.choice([
-                    "Silver accents", 
-                    "White gold stud earrings", 
-                    "Platinum delicate chain",
-                    "Chunky silver bangle",
-                    "Classic pearl necklace with silver clasp",
-                    "Silver geometric rings"
-                ])
+                if is_male:
+                    jewelry = np.random.choice([
+                        "Silver band ring",
+                        "Steel cuff",
+                        "Silver diver watch",
+                        "Platinum box chain"
+                    ])
+                else:
+                    jewelry = np.random.choice([
+                        "Silver accents", 
+                        "White gold stud earrings", 
+                        "Platinum delicate chain",
+                        "Chunky silver bangle",
+                        "Classic pearl necklace with silver clasp",
+                        "Silver geometric rings"
+                    ])
                 
             colors_arr = []
             if hero_color:

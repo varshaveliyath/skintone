@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { AnimatePresence } from "framer-motion";
 import { subtypeDescriptions } from "./data/skinSubtypeDescriptions";
 import { generateOutfitIdeas } from "./utils/generateOutfitIdeas";
 import { getRandomFashionRule } from "./utils/fashionRules";
@@ -15,10 +16,12 @@ import { ProjectDocsModal } from "./components/ProjectDocsModal";
 
 export default function App() {
   /* -------------------- STATE -------------------- */
+  const [gender, setGender] = useState("female");
   const [selectedImage, setSelectedImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [outfitsLoading, setOutfitsLoading] = useState(false);
   const [outfits, setOutfits] = useState([]);
   const [fashionRules, setFashionRules] = useState([]);
   const [userEvent, setUserEvent] = useState("");
@@ -39,6 +42,10 @@ export default function App() {
   }, []);
 
   /* -------------------- HANDLERS -------------------- */
+  const handleGenderSelect = (selected) => {
+    setGender(selected);
+  };
+
   const handleImageChange = (e) => {
     let file = null;
     if (e && e.target && e.target.files) {
@@ -70,10 +77,11 @@ export default function App() {
 
     const formData = new FormData();
     formData.append("image", selectedImage);
+    formData.append("gender", gender);
 
     try {
       const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-      const res = await fetch(`${API_URL}/analyze`, {
+      const res = await fetch(`${API_URL}/analyze?gender=${gender}`, {
         method: "POST",
         body: formData,
       });
@@ -88,7 +96,14 @@ export default function App() {
       
       // Auto-generate outfits
       if (data.recommended_colors) {
-        const generatedOutfits = await generateOutfitIdeas(data.recommended_colors, data.undertone, userEvent, data.dark_score, userSeason);
+        const generatedOutfits = await generateOutfitIdeas(
+          data.recommended_colors, 
+          data.undertone, 
+          userEvent, 
+          data.dark_score, 
+          userSeason,
+          gender
+        );
         setOutfits(generatedOutfits);
       }
 
@@ -104,9 +119,21 @@ export default function App() {
 
   const refreshOutfits = async (event = userEvent, season = userSeason) => {
     if (result?.recommended_colors) {
-        setOutfits([]); // Show loading state briefly
-        const newOutfits = await generateOutfitIdeas(result.recommended_colors, result.undertone, event, result.dark_score, season);
+        setOutfitsLoading(true);
+        
+        // Shuffle colors to ensure variety on refresh
+        const shuffledColors = [...result.recommended_colors].sort(() => Math.random() - 0.5);
+        
+        const newOutfits = await generateOutfitIdeas(
+          shuffledColors, 
+          result.undertone, 
+          event, 
+          result.dark_score, 
+          season,
+          gender
+        );
         setOutfits(newOutfits);
+        setOutfitsLoading(false);
     }
   };
 
@@ -129,6 +156,8 @@ export default function App() {
         onAnalyze={handleAnalyze}
         loading={loading}
         previewUrl={previewUrl}
+        gender={gender}
+        onGenderChange={setGender}
       />
 
       {/* 3. Results Section */}
