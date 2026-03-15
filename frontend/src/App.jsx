@@ -39,6 +39,9 @@ export default function App() {
       r2 = getRandomFashionRule();
     } while (r2.title === r1.title);
     setFashionRules([r1, r2]);
+
+    // Ensure hero section is visible on load
+    window.scrollTo(0, 0);
   }, []);
 
   /* -------------------- HANDLERS -------------------- */
