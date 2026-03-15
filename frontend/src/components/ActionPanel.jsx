@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { Upload, Camera, Loader2, Sparkles, RefreshCw, User, UserCheck } from 'lucide-react';
+import { Upload, Camera, Loader2, Sparkles, RefreshCcw, RefreshCw, User, UserCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Webcam from 'react-webcam';
 import { GlassCard } from './GlassCard';
@@ -122,6 +122,12 @@ export function ActionPanel({ onImageChange, onAnalyze, loading, previewUrl, gen
                 </div>
               </label>
 
+              <div className="mb-6 px-4 py-3 bg-purple-500/10 border border-purple-500/20 rounded-2xl max-w-md mx-auto">
+                <p className="text-[11px] md:text-sm text-purple-300 font-medium leading-relaxed text-center">
+                  Tip: Use natural lighting (no direct sun or filters) and avoid accessories like glasses or masks for the most accurate results.
+                </p>
+              </div>
+
               <div className="flex justify-center">
                 <button
                   onClick={onAnalyze}
@@ -135,7 +141,7 @@ export function ActionPanel({ onImageChange, onAnalyze, loading, previewUrl, gen
                     </>
                   ) : (
                     <>
-                      <Sparkles className="w-5 h-5" />
+                      <RefreshCcw className="w-5 h-5" />
                       Analyze Skin Tone
                     </>
                   )}

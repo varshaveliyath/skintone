@@ -13,7 +13,6 @@ from PIL import Image, ImageOps
 from color_maps import seasonal_recommended_colors, seasonal_avoid_colors
 import joblib
 import warnings
-import pandas as pd
 
 # =========================
 # LOGGING
@@ -52,16 +51,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# =========================
-# STATIC FILES (Frontend Integration)
-# =========================
-frontend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend", "dist")
-if os.path.exists(frontend_path):
-    app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
-    logger.info(f"Frontend static files mounted from {frontend_path}")
-else:
-    logger.warning(f"Frontend dist folder not found at {frontend_path}. Backend running as API only.")
 
 logger.info("FastAPI app initialized")
 

@@ -17,23 +17,25 @@ export function ProjectDocsModal({ isOpen, onClose }) {
       ]
     },
     {
-      title: "3 AI Models",
+      title: "5 AI Models",
       icon: Layers,
       content: [
-        { label: "Skin Classifier", value: "Gradient Boosting model that analyzes your spectral profile to determine your seasonal subtype." },
-        { label: "Color Scorer", value: "Random Forest Regressor that scores thousands of colors against your unique RGB values for precision matching." },
-        { label: "Fashion Recommender", value: "K-Nearest Neighbors (KNN) model that curates outfits based on high-fashion data points." }
+        { label: "Skin Classifier", value: "Gradient Boosting model mapping spectral data to 12 seasonal subtypes." },
+        { label: "Color Scorer", value: "Random Forest Regressor measuring harmony with 100,000 reference points." },
+        { label: "Female Stylist", value: "KNN Engine (F) for chic, high-fashion feminine recommendations." },
+        { label: "Male Stylist", value: "KNN Engine (M) for tailored, versatile masculine recommendations." },
+        { label: "Static Router", value: "Unified server logic delivering both API and UI from a single core." }
       ]
     },
     {
       title: "Backend & Workflow",
       icon: Zap,
       content: [
-        { label: "Core Backend", value: "FastAPI + Python" },
-        { label: "AI Framework", value: "Scikit-learn + Joblib" },
-        { label: "Face Mapping", value: "MediaPipe FaceMesh" },
-        { label: "Data Processing", value: "NumPy + Pillow (PIL)" },
-        { label: "Pipeline", value: "Image upload → Pixel extraction → Neural inference → Fashion curation" }
+        { label: "Core Backend", value: "FastAPI + Gunicorn Production Server" },
+        { label: "Static Integration", value: "Single-port SPA routing for dist assets" },
+        { label: "AI Framework", value: "Scikit-learn + NumPy + Joblib" },
+        { label: "Face Mapping", value: "MediaPipe FaceMesh (468 landmarks)" },
+        { label: "Pipeline", value: "Spectral Analysis → Neutral Inference → Stylist Curation" }
       ]
     }
   ];
@@ -67,7 +69,7 @@ export function ProjectDocsModal({ isOpen, onClose }) {
       id: "ai",
       title: "5. AI Models: The Intelligence Core",
       icon: Brain,
-      text: "Moodwear employs a multi-stage AI inference engine. The Skin Classifier (Gradient Boosting) classifies users into one of the 12 professional seasonal subtypes, trained on 24,000 samples. The Color Compatibility Scorer (Random Forest) predicts Match Scores using a 100,000 sample dataset, capturing multi-dimensional feature interactions. Finally, the Fashion Recommender (KNN) curates outfits by finding 'neighbors' in a high-dimensional fashion space, ensuring stylistic cohesion."
+      text: "Moodwear employs a multi-stage AI inference engine. The Skin Classifier (Gradient Boosting) classifies users into one of the 12 professional seasonal subtypes. The Color Compatibility Scorer (Random Forest) predicts Match Scores by capturing multi-dimensional feature interactions. \n\nA key advancement in our latest build is the Gender-Specific Curation system. We've deployed dual KNN (K-Nearest Neighbors) models—one fine-tuned on feminine high-fashion aesthetics and another on tailored masculine styles. This ensures that recommendations aren't just color-accurate, but stylistically relevant to the user's selected gender base."
     },
     {
       id: "data",
