@@ -148,7 +148,7 @@ export function AvatarSection({
             <span className="text-xs uppercase font-black tracking-[0.4em] text-zinc-500">ML Precision Studio</span>
           </div>
           <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase leading-none">
-            Virtual <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-cyan-500">Try-On</span> Studio
+            Curated <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-cyan-500">Outfits</span>
           </h2>
         </div>
 
@@ -191,8 +191,8 @@ export function AvatarSection({
       {/* 2. Side-by-Side Unified Stage (40/60 Split) */}
       <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 items-stretch">
         
-        {/* LEFT COLUMN: 3D Studio (40% / 4 Columns) */}
-        <div className="lg:col-span-4 flex flex-col h-full">
+        {/* LEFT COLUMN: 3D Studio (40% / 4 Columns) - Hidden on Mobile */}
+        <div className="hidden lg:flex lg:col-span-4 flex-col h-full">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -201,6 +201,10 @@ export function AvatarSection({
               background: 'radial-gradient(circle at 50% 30%, rgba(99,102,241,0.1) 0%, rgba(0,0,0,1) 100%)' 
             }}
           >
+            {/* Virtual Try On Subheading */}
+            <div className="absolute top-8 left-8 z-20 pointer-events-none">
+              <span className="text-[10px] uppercase font-black tracking-[0.4em] text-white/40">Virtual Try On</span>
+            </div>
             {/* Visual Grid Overlays */}
             <div className="absolute inset-0 opacity-[0.02] pointer-events-none"
                  style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)', backgroundSize: '50px 50px' }} />
@@ -215,12 +219,8 @@ export function AvatarSection({
               shoeColor={shoeColor}
             />
 
-            {/* HUD: Active Status */}
-            <div className="absolute top-6 left-6 flex flex-col gap-3 pointer-events-none">
-              <div className="px-4 py-2 bg-black/60 backdrop-blur-xl border border-white/5 rounded-2xl flex items-center gap-3">
-                 <div className="w-2.5 h-2.5 rounded-full shadow-[0_0_8px_currentColor]" style={{ backgroundColor: skinColor, color: skinColor }} />
-                 <span className="text-[10px] font-black text-white/90 uppercase tracking-[0.2em]">{closestTone.label} Stage</span>
-              </div>
+            {/* HUD: Applied Outfit Status */}
+            <div className="absolute top-16 left-8 flex flex-col gap-3 pointer-events-none z-20">
               <AnimatePresence>
                 {appliedLabel && (
                   <motion.div
