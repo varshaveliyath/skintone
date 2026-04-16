@@ -139,9 +139,9 @@ export function AvatarSection({
   const displayOutfits = outfits.slice(0, 3);
 
   return (
-    <section className="mt-12 md:mt-24 px-4 md:px-0 scroll-mt-20" id="try-on-studio">
+    <section className="mt-12 md:mt-24 px-0 md:px-0 scroll-mt-20" id="try-on-studio">
       {/* 1. Header Section */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
+      <div className="flex flex-col md:flex-row items-center md:items-end justify-between gap-8 mb-12 px-4 md:px-0 text-center md:text-left">
         <div className="space-y-3">
           <div className="flex items-center gap-3">
             <div className="w-2 h-8 bg-gradient-to-b from-indigo-500 to-purple-600 rounded-full" />
@@ -153,7 +153,7 @@ export function AvatarSection({
         </div>
 
         {/* Studio Controls */}
-        <div className="flex flex-col xl:flex-row items-end gap-6 bg-white/[0.02] p-3 rounded-2xl border border-white/5 backdrop-blur-2xl">
+        <div className="flex flex-col xl:flex-row items-center xl:items-end gap-6 bg-white/[0.02] p-3 rounded-2xl border border-white/5 backdrop-blur-2xl w-full xl:w-auto">
           <TabSelector 
             label="Season"
             value={season}
@@ -180,7 +180,7 @@ export function AvatarSection({
 
           <button 
             onClick={() => onCurate(event, season)}
-            className="group flex items-center justify-center gap-2 px-8 py-3 bg-gradient-to-r from-indigo-600 to-blue-600 rounded-xl text-xs font-black text-white uppercase tracking-widest hover:brightness-110 transition-all shadow-xl shadow-indigo-500/20 active:scale-95 whitespace-nowrap h-[38px]"
+            className="group flex items-center justify-center gap-2 px-8 py-3 bg-gradient-to-r from-indigo-600 to-blue-600 rounded-xl text-xs font-black text-white uppercase tracking-widest hover:brightness-110 transition-all shadow-xl shadow-indigo-500/20 active:scale-95 whitespace-nowrap h-[38px] w-full xl:w-auto"
           >
             <RefreshCcw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-700" />
             Sync Palette
@@ -196,7 +196,7 @@ export function AvatarSection({
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="relative flex-1 rounded-[32px] overflow-hidden border border-white/10 shadow-3xl bg-black h-[500px] sm:h-[600px] lg:h-[650px]"
+            className="relative flex-1 rounded-[32px] overflow-hidden border border-white/10 shadow-3xl bg-black h-[85vh] lg:h-[650px]"
             style={{ 
               background: 'radial-gradient(circle at 50% 30%, rgba(99,102,241,0.1) 0%, rgba(0,0,0,1) 100%)' 
             }}
@@ -253,7 +253,7 @@ export function AvatarSection({
         </div>
 
         {/* RIGHT COLUMN: Triangle Formation (60% / 6 Columns) */}
-        <div className="lg:col-span-6 flex flex-col justify-center">
+        <div className="lg:col-span-6 flex flex-col justify-center px-4 md:px-0 mt-12 md:mt-0">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 relative">
             
             {/* Background Decorative Accent */}

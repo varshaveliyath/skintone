@@ -166,9 +166,8 @@ export default function App() {
         onGenderChange={setGender}
       />
 
-      {/* 3. Results Section */}
       {result && (
-        <div className="max-w-6xl mx-auto px-6 mb-24 space-y-8">
+        <div className="max-w-6xl mx-auto px-4 md:px-6 mb-24 space-y-8">
            <div className="space-y-8">
              <AnalysisDisplay 
               result={result} 
