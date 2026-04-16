@@ -155,12 +155,8 @@ export default function App() {
       
       {/* 1. Hero Section */}
       <AnalysisHero />
-
-      {/* 2. Skin Science & Color Theory (Now before upload) */}
-      <SkinMatrixSection />
-      <ColorTheorySection result={result} />
-
-      {/* 3. Upload & Action Panel */}
+      
+      {/* 2. Upload & Action Panel */}
       <ActionPanel 
         onImageChange={handleImageChange}
         onAnalyze={handleAnalyze}
@@ -170,6 +166,7 @@ export default function App() {
         onGenderChange={setGender}
       />
 
+      {/* 3. Results Section */}
       {result && (
         <div className="max-w-6xl mx-auto px-6 mb-24 space-y-8">
            <div className="space-y-8">
@@ -193,6 +190,10 @@ export default function App() {
 
       {/* 4. Tips & Education */}
       {result && <TipsSection rules={fashionRules} />}
+
+      {/* 5. Skin Science & Color Theory (Technical Deep Dive) */}
+      <SkinMatrixSection />
+      <ColorTheorySection result={result} />
 
       {/* 5. Luxury Footer */}
       <PremiumFooter onDocsClick={() => setIsDocsOpen(true)} />

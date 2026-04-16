@@ -196,9 +196,8 @@ export function AvatarSection({
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="relative flex-1 rounded-[32px] overflow-hidden border border-white/10 shadow-3xl bg-black"
+            className="relative flex-1 rounded-[32px] overflow-hidden border border-white/10 shadow-3xl bg-black h-[500px] sm:h-[600px] lg:h-[650px]"
             style={{ 
-              height: '650px',
               background: 'radial-gradient(circle at 50% 30%, rgba(99,102,241,0.1) 0%, rgba(0,0,0,1) 100%)' 
             }}
           >
@@ -255,7 +254,7 @@ export function AvatarSection({
 
         {/* RIGHT COLUMN: Triangle Formation (60% / 6 Columns) */}
         <div className="lg:col-span-6 flex flex-col justify-center">
-          <div className="grid grid-cols-2 gap-6 relative">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 relative">
             
             {/* Background Decorative Accent */}
             <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none rounded-[32px] -m-4" />
@@ -272,7 +271,7 @@ export function AvatarSection({
               <>
                 {/* 1. TOP CARD (Triangle Apex) */}
                 {displayOutfits[0] && (
-                  <div className="col-span-2 flex justify-center mb-2">
+                  <div className="sm:col-span-2 flex justify-center mb-2">
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}

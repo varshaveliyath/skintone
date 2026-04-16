@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 
 export function AnalysisHero() {
   return (
-    <section className="relative w-full pt-32 md:pt-48 pb-16 md:pb-20 flex flex-col items-center justify-center overflow-hidden">
+    <section className="relative w-full min-h-screen lg:min-h-0 pt-32 md:pt-48 pb-16 md:pb-20 flex flex-col items-center justify-center overflow-hidden">
       {/* Cinematic Background Ambience */}
       <div className="absolute inset-0 z-0 bg-[#050505]">
         <div className="absolute top-0 left-1/4 w-[40%] h-[60%] bg-purple-600/10 blur-[180px] rounded-full animate-pulse" />
