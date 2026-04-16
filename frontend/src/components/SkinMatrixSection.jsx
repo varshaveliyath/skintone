@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Palette, Zap, Layers } from 'lucide-react';
+import { Palette, Layers } from 'lucide-react';
 import { GlassCard } from './GlassCard';
 
 const MATRIX_DATA = [
@@ -89,7 +89,7 @@ const MATRIX_DATA = [
 
 export function SkinMatrixSection() {
   return (
-    <section className="mt-12 px-4 md:px-0 scroll-mt-20">
+    <section className="mt-40 md:mt-32 px-4 md:px-0 scroll-mt-20">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div className="space-y-3">
@@ -125,13 +125,10 @@ export function SkinMatrixSection() {
                     />
                     <div>
                       <h3 className="text-white font-black uppercase tracking-tight text-[11px] leading-tight">{item.tone}</h3>
-                      <div className="flex gap-1 mt-0.5">
-                        <span className="text-[9px] px-1 py-0 bg-white/5 text-zinc-500 rounded uppercase font-bold">{item.depth}</span>
-                        <span className="text-[9px] px-1 py-0 bg-indigo-500/10 text-indigo-400 rounded uppercase font-bold">{item.temp}</span>
-                      </div>
+                      {/* Tags removed for cleaner UI */}
                     </div>
                   </div>
-                  <Sparkles className="w-3.5 h-3.5 text-zinc-800 group-hover:text-indigo-500 transition-colors" />
+                  {/* Sparkles icon removed */}
                 </div>
 
                 <p className="text-zinc-500 text-[10px] leading-relaxed mb-4 flex-1">
@@ -152,9 +149,9 @@ export function SkinMatrixSection() {
                   </div>
 
                   <div className="flex items-start gap-1.5 px-0.5">
-                    <Zap className="w-2.5 h-2.5 text-indigo-500/60 mt-0.5" />
+                    {/* Zap icon removed */}
                     <p className="text-[9px] text-zinc-600 leading-tight">
-                      <span className="text-zinc-400 font-bold">Logic:</span> {item.logic}
+                      {item.logic}
                     </p>
                   </div>
                 </div>
