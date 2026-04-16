@@ -9,10 +9,12 @@ import { PremiumHeader } from "./components/PremiumHeader";
 import { AnalysisHero } from "./components/AnalysisHero";
 import { ActionPanel } from "./components/ActionPanel";
 import { AnalysisDisplay } from "./components/AnalysisDisplay";
-import { OutfitSection } from "./components/OutfitSection";
+import { AvatarSection } from "./components/AvatarSection";
 import { TipsSection } from "./components/TipsSection";
 import { PremiumFooter } from "./components/PremiumFooter";
 import { ProjectDocsModal } from "./components/ProjectDocsModal";
+import { SkinMatrixSection } from "./components/SkinMatrixSection";
+import { ColorTheorySection } from "./components/ColorTheorySection";
 
 export default function App() {
   /* -------------------- STATE -------------------- */
@@ -27,6 +29,7 @@ export default function App() {
   const [userEvent, setUserEvent] = useState("");
   const [userSeason, setUserSeason] = useState("Summer");
   const [isDocsOpen, setIsDocsOpen] = useState(false);
+  const [activeAvatarOutfit, setActiveAvatarOutfit] = useState(null);
 
   /* -------------------- INITIAL LOAD -------------------- */
   useEffect(() => {
@@ -153,7 +156,11 @@ export default function App() {
       {/* 1. Hero Section */}
       <AnalysisHero />
 
-      {/* 2. Upload & Action Panel */}
+      {/* 2. Skin Science & Color Theory (Now before upload) */}
+      <SkinMatrixSection />
+      <ColorTheorySection result={result} />
+
+      {/* 3. Upload & Action Panel */}
       <ActionPanel 
         onImageChange={handleImageChange}
         onAnalyze={handleAnalyze}
@@ -163,19 +170,22 @@ export default function App() {
         onGenderChange={setGender}
       />
 
-      {/* 3. Results Section */}
       {result && (
-        <div className="max-w-7xl mx-auto px-6 mb-24 space-y-8">
+        <div className="max-w-6xl mx-auto px-6 mb-24 space-y-8">
            <div className="space-y-8">
              <AnalysisDisplay 
               result={result} 
               subtypeDescriptions={subtypeDescriptions} 
              />
-             <OutfitSection 
+             <AvatarSection
                result={result}
-               outfits={outfits} 
-               onRefresh={refreshOutfits} 
+               gender={gender}
+               activeOutfit={activeAvatarOutfit}
+               outfits={outfits}
+               onRefresh={refreshOutfits}
                onCurate={handleCurate}
+               loading={outfitsLoading}
+               onApplyOutfit={setActiveAvatarOutfit}
              />
            </div>
         </div>

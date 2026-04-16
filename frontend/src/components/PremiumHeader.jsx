@@ -7,7 +7,7 @@ export function PremiumHeader() {
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-      className="fixed top-0 left-0 w-full z-50 bg-[#09090b]/80 backdrop-blur-xl border-b border-white/[0.03] py-3 md:py-5 overflow-hidden"
+      className="absolute top-0 left-0 w-full z-50 bg-[#09090b]/80 backdrop-blur-xl border-b border-white/[0.03] py-3 md:py-5 overflow-hidden"
     >
       {/* Decorative Symmetric Shapes */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">

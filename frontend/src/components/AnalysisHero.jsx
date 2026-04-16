@@ -8,7 +8,19 @@ export function AnalysisHero() {
       <div className="absolute inset-0 z-0 bg-[#050505]">
         <div className="absolute top-0 left-1/4 w-[40%] h-[60%] bg-purple-600/10 blur-[180px] rounded-full animate-pulse" />
         <div className="absolute bottom-0 right-1/4 w-[40%] h-[60%] bg-cyan-600/10 blur-[180px] rounded-full animate-pulse" />
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.03] mix-blend-overlay" />
+        
+        {/* Architectural Mesh Grid */}
+        <div 
+          className="absolute inset-0" 
+          style={{ 
+            backgroundImage: `linear-gradient(to right, rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.08) 1px, transparent 1px)`,
+            backgroundSize: '40px 40px',
+            maskImage: 'radial-gradient(ellipse 60% 60% at 50% 50%, black 20%, transparent 100%)',
+            WebkitMaskImage: 'radial-gradient(ellipse 60% 60% at 50% 50%, black 20%, transparent 100%)'
+          }} 
+        />
+        
+        <div className="absolute inset-0 bg-black/10" />
       </div>
 
       <motion.div 
@@ -30,9 +42,9 @@ export function AnalysisHero() {
         </motion.div>
         
         <h1 className="text-4xl sm:text-5xl md:text-8xl font-black tracking-tighter mb-6 md:mb-8 leading-[0.9] text-white">
-          Automated Skin <br /> 
+          Automated Personalized <br /> 
           <span className="text-zinc-500 hover:text-white transition-colors duration-700 cursor-default">
-            Color Classification
+            Fashion Stylist
           </span>
         </h1>
         
